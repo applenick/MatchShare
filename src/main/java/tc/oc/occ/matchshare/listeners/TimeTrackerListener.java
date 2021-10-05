@@ -82,6 +82,11 @@ public class TimeTrackerListener extends ShareListener {
 
   @EventHandler
   public void onPlayerJoinMatch(PlayerJoinPartyEvent event) {
+    // End time tracking for old party
+    if (event.getOldParty() instanceof Competitor) {
+      tracker.getPlayerData(event.getPlayer().getId()).end((Competitor) event.getOldParty());
+    }
+
     // When joining a party that's playing, start time tracking
     if (event.getNewParty() instanceof Competitor) {
       tracker.getPlayerData(event.getPlayer().getId()).start((Competitor) event.getNewParty());
