@@ -1,9 +1,11 @@
 package tc.oc.occ.matchshare.listeners;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
@@ -34,6 +36,7 @@ public class TimeTrackerListener extends ShareListener {
   public void onMatchFinish(MatchFinishEvent event) {
     List<Player> winningPlayers = Lists.newArrayList();
     List<Player> participatingPlayers = Lists.newArrayList();
+    Map<Player, Duration> playerTimes = Maps.newHashMap();
 
     // Match Info
     List<UUID> winnerIds = getWinnerIds(event.getWinners());
@@ -66,6 +69,9 @@ public class TimeTrackerListener extends ShareListener {
                 if (data.getTotalTime().getSeconds() >= matchLength.getSeconds() * 0.35) {
                   participatingPlayers.add(player);
                 }
+
+                // Include time played on the player's primary team
+                playerTimes.put(player, data.getTimePlayed(data.getPrimaryTeam()));
               }
             });
 
@@ -74,7 +80,7 @@ public class TimeTrackerListener extends ShareListener {
     callNewEvent(new PGMMatchParticipationEvent(participatingPlayers));
 
     // General end event
-    callNewEvent(new PGMMatchEndEvent(winningPlayers, participatingPlayers, matchLength));
+    callNewEvent(new PGMMatchEndEvent(winningPlayers, playerTimes, matchLength));
 
     // Reset all tracker data as match is over and events have been completed
     tracker.reset();
