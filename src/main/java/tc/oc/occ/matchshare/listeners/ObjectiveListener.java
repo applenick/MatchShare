@@ -9,6 +9,7 @@ import tc.oc.occ.dispense.events.objectives.PGMCoreLeakEvent;
 import tc.oc.occ.dispense.events.objectives.PGMFlagCaptureEvent;
 import tc.oc.occ.dispense.events.objectives.PGMFlagPickupEvent;
 import tc.oc.occ.dispense.events.objectives.PGMMonumentDestroyEvent;
+import tc.oc.occ.dispense.events.objectives.PGMScoreEvent;
 import tc.oc.occ.dispense.events.objectives.PGMWoolCaptureEvent;
 import tc.oc.occ.dispense.events.objectives.PGMWoolTouchEvent;
 import tc.oc.occ.matchshare.MatchShare;
@@ -17,6 +18,7 @@ import tc.oc.pgm.destroyable.DestroyableDestroyedEvent;
 import tc.oc.pgm.flag.event.FlagCaptureEvent;
 import tc.oc.pgm.flag.event.FlagPickupEvent;
 import tc.oc.pgm.goals.events.GoalTouchEvent;
+import tc.oc.pgm.score.PlayerScoreEvent;
 import tc.oc.pgm.wool.MonumentWool;
 import tc.oc.pgm.wool.PlayerWoolPlaceEvent;
 
@@ -91,6 +93,13 @@ public class ObjectiveListener extends ShareListener {
 
     if (!destroyers.isEmpty()) {
       callNewEvent(new PGMMonumentDestroyEvent(destroyers));
+    }
+  }
+
+  @EventHandler
+  public void onPlayerScore(PlayerScoreEvent event) {
+    if (event.getPlayer() != null && event.getScore() > 0) {
+      callNewEvent(new PGMScoreEvent(event.getPlayer().getBukkit(), (int) event.getScore()));
     }
   }
 }

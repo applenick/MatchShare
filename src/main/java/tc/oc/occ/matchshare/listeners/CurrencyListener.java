@@ -9,7 +9,9 @@ import tc.oc.occ.dispense.events.currency.PlayerEarnCurrencyEvent;
 import tc.oc.occ.dispense.events.objectives.PGMCoreLeakEvent;
 import tc.oc.occ.dispense.events.objectives.PGMFlagCaptureEvent;
 import tc.oc.occ.dispense.events.objectives.PGMMonumentDestroyEvent;
+import tc.oc.occ.dispense.events.objectives.PGMScoreEvent;
 import tc.oc.occ.dispense.events.objectives.PGMWoolCaptureEvent;
+import tc.oc.occ.dispense.events.objectives.PGMWoolDestroyEvent;
 import tc.oc.occ.dispense.events.objectives.PGMWoolTouchEvent;
 import tc.oc.occ.dispense.events.players.PGMPlayerDeathEvent;
 import tc.oc.occ.matchshare.MatchShare;
@@ -54,6 +56,17 @@ public class CurrencyListener extends ShareListener {
   @EventHandler
   public void onFlagCapture(PGMFlagCaptureEvent event) {
     callNewEvent(new PlayerEarnCurrencyEvent(event.getPlayer(), CurrencyType.FLAG));
+  }
+
+  @EventHandler
+  public void onScorePoints(PGMScoreEvent event) {
+    callNewEvent(
+        new PlayerEarnCurrencyEvent(event.getPlayer(), CurrencyType.SCORE, true, event.getScore()));
+  }
+
+  @EventHandler
+  public void onWoolDestroy(PGMWoolDestroyEvent event) {
+    callNewEvent(new PlayerEarnCurrencyEvent(event.getPlayer(), CurrencyType.WOOL_DESTROY, true));
   }
 
   @EventHandler
