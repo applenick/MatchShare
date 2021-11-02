@@ -19,6 +19,7 @@ import org.bukkit.material.Wool;
 import tc.oc.occ.dispense.events.objectives.PGMWoolDestroyEvent;
 import tc.oc.occ.matchshare.MatchShare;
 import tc.oc.pgm.api.PGM;
+import tc.oc.pgm.api.match.event.MatchFinishEvent;
 import tc.oc.pgm.api.party.Competitor;
 import tc.oc.pgm.api.player.ParticipantState;
 import tc.oc.pgm.goals.Goal;
@@ -88,6 +89,12 @@ public class WoolDestructionListener extends ShareListener {
     if (isDestroyableWool(stack, player.getParty())) {
       acceptWoolDestroy(player, ((Wool) stack.getData()).getColor());
     }
+  }
+
+  @EventHandler
+  public void onMatchEnd(MatchFinishEvent event) {
+    this.droppedWools.clear();
+    this.destroyedWools.clear();
   }
 
   public ParticipantState getParticipantState(UUID playerId) {
