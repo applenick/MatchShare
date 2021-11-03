@@ -1,5 +1,8 @@
 package tc.oc.occ.matchshare.listeners;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import java.util.UUID;
 import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.ItemStack;
 import tc.oc.occ.dispense.events.DisplayFakeItemsEvent;
@@ -14,13 +17,18 @@ import tc.oc.occ.dispense.events.objectives.PGMWoolCaptureEvent;
 import tc.oc.occ.dispense.events.objectives.PGMWoolDestroyEvent;
 import tc.oc.occ.dispense.events.objectives.PGMWoolTouchEvent;
 import tc.oc.occ.dispense.events.players.PGMPlayerDeathEvent;
+import tc.oc.occ.dispense.events.players.PGMPlayerVoteEvent;
 import tc.oc.occ.matchshare.MatchShare;
 import tc.oc.occ.matchshare.utils.NMSHacks;
+import tc.oc.pgm.api.match.event.MatchPhaseChangeEvent;
 
 public class CurrencyListener extends ShareListener {
 
+  private Cache<UUID, String> mapVotes;
+
   public CurrencyListener(MatchShare plugin) {
     super(plugin);
+    this.mapVotes = CacheBuilder.newBuilder().build();
   }
 
   @EventHandler
@@ -67,6 +75,19 @@ public class CurrencyListener extends ShareListener {
   @EventHandler
   public void onWoolDestroy(PGMWoolDestroyEvent event) {
     callNewEvent(new PlayerEarnCurrencyEvent(event.getPlayer(), CurrencyType.WOOL_DESTROY, true));
+  }
+
+  @EventHandler
+  public void onMapVote(PGMPlayerVoteEvent event) {
+    if (mapVotes.getIfPresent(event.getPlayer().getUniqueId()) == null) {
+      callNewEvent(new PlayerEarnCurrencyEvent(event.getPlayer(), CurrencyType.MAP_VOTE, true));
+      mapVotes.put(event.getPlayer().getUniqueId(), event.getMapName());
+    }
+  }
+
+  @EventHandler
+  public void onMatchPhaseChange(MatchPhaseChangeEvent event) {
+    this.mapVotes.invalidateAll();
   }
 
   @EventHandler

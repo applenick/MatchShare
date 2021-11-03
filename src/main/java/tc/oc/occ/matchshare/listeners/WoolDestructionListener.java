@@ -4,7 +4,6 @@ import com.google.common.collect.HashMultimap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
-import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
