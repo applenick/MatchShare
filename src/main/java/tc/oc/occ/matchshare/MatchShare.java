@@ -8,6 +8,7 @@ import tc.oc.occ.matchshare.listeners.ObjectiveListener;
 import tc.oc.occ.matchshare.listeners.ObserverListener;
 import tc.oc.occ.matchshare.listeners.PlayerCombatListener;
 import tc.oc.occ.matchshare.listeners.PlayerMetaListener;
+import tc.oc.occ.matchshare.listeners.StatsListener;
 import tc.oc.occ.matchshare.listeners.TimeTrackerListener;
 import tc.oc.occ.matchshare.listeners.VoteListener;
 import tc.oc.occ.matchshare.listeners.WoolDestructionListener;
@@ -33,6 +34,7 @@ public class MatchShare extends JavaPlugin implements Listener {
     registerEvents(new ObserverListener(this));
     registerEvents(new WoolDestructionListener(this));
     registerEvents(new VoteListener(this));
+    registerEvents(new StatsListener(this));
   }
 
   public MatchTimeTracker getTimeTracker() {
