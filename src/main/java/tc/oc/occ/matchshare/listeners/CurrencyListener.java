@@ -20,6 +20,7 @@ import tc.oc.occ.dispense.events.players.PGMPlayerDeathEvent;
 import tc.oc.occ.dispense.events.players.PGMPlayerVoteEvent;
 import tc.oc.occ.matchshare.MatchShare;
 import tc.oc.occ.matchshare.utils.NMSHacks;
+import tc.oc.occ.matchshare.utils.WoolUtils;
 import tc.oc.pgm.api.match.event.MatchPhaseChangeEvent;
 
 public class CurrencyListener extends ShareListener {
@@ -37,7 +38,11 @@ public class CurrencyListener extends ShareListener {
         && !event.isSuicide()
         && !event.isSelfKill()
         && event.getKiller() != null) {
-      callNewEvent(new PlayerEarnCurrencyEvent(event.getKiller(), CurrencyType.KILL));
+      CurrencyType type =
+          WoolUtils.isHoldingWool(event.getDead())
+              ? CurrencyType.KILL_WOOL_HOLDER
+              : CurrencyType.KILL;
+      callNewEvent(new PlayerEarnCurrencyEvent(event.getKiller(), type));
     }
   }
 
