@@ -7,16 +7,20 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import tc.oc.occ.dispense.events.objectives.PGMCoreLeakEvent;
 import tc.oc.occ.dispense.events.objectives.PGMFlagCaptureEvent;
+import tc.oc.occ.dispense.events.objectives.PGMFlagDropEvent;
 import tc.oc.occ.dispense.events.objectives.PGMFlagPickupEvent;
 import tc.oc.occ.dispense.events.objectives.PGMMonumentDestroyEvent;
 import tc.oc.occ.dispense.events.objectives.PGMScoreEvent;
 import tc.oc.occ.dispense.events.objectives.PGMWoolCaptureEvent;
 import tc.oc.occ.dispense.events.objectives.PGMWoolTouchEvent;
 import tc.oc.occ.matchshare.MatchShare;
+import tc.oc.pgm.api.match.event.MatchFinishEvent;
 import tc.oc.pgm.core.CoreLeakEvent;
 import tc.oc.pgm.destroyable.DestroyableDestroyedEvent;
 import tc.oc.pgm.flag.event.FlagCaptureEvent;
 import tc.oc.pgm.flag.event.FlagPickupEvent;
+import tc.oc.pgm.flag.event.FlagStateChangeEvent;
+import tc.oc.pgm.flag.state.Dropped;
 import tc.oc.pgm.goals.events.GoalTouchEvent;
 import tc.oc.pgm.score.PlayerScoreEvent;
 import tc.oc.pgm.wool.MonumentWool;
@@ -74,6 +78,19 @@ public class ObjectiveListener extends ShareListener {
   public void onFlagPickup(FlagPickupEvent event) {
     if (!event.isCancelled() && event.getCarrier() != null) {
       callNewEvent(new PGMFlagPickupEvent(event.getCarrier().getBukkit()));
+
+      // Start tracking flag time for player
+      plugin.getFlagTracker().startTracking(event.getCarrier().getId());
+    }
+  }
+
+  @EventHandler
+  public void onFlagDrop(FlagStateChangeEvent event) {
+    if (event.getNewState() instanceof Dropped) {
+      Dropped dropped = (Dropped) event.getNewState();
+      if (dropped.getDropper() != null) {
+        callNewEvent(new PGMFlagDropEvent(dropped.getDropper().getBukkit()));
+      }
     }
   }
 
@@ -101,5 +118,10 @@ public class ObjectiveListener extends ShareListener {
     if (event.getPlayer() != null && event.getScore() > 0) {
       callNewEvent(new PGMScoreEvent(event.getPlayer().getBukkit(), (int) event.getScore()));
     }
+  }
+
+  @EventHandler(priority = EventPriority.HIGHEST)
+  public void onMatchEnd(MatchFinishEvent event) {
+    plugin.getFlagTracker().reset();
   }
 }

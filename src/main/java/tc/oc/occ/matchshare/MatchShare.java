@@ -11,15 +11,18 @@ import tc.oc.occ.matchshare.listeners.PlayerMetaListener;
 import tc.oc.occ.matchshare.listeners.TimeTrackerListener;
 import tc.oc.occ.matchshare.listeners.VoteListener;
 import tc.oc.occ.matchshare.listeners.WoolDestructionListener;
+import tc.oc.occ.matchshare.tracker.FlagTimeTracker;
 import tc.oc.occ.matchshare.tracker.MatchTimeTracker;
 
 public class MatchShare extends JavaPlugin implements Listener {
 
   private MatchTimeTracker timeTracker;
+  private FlagTimeTracker flagTracker;
 
   @Override
   public void onEnable() {
     this.timeTracker = new MatchTimeTracker();
+    this.flagTracker = new FlagTimeTracker();
 
     registerEvents(new PlayerMetaListener(this));
     registerEvents(new PlayerCombatListener(this));
@@ -34,6 +37,10 @@ public class MatchShare extends JavaPlugin implements Listener {
 
   public MatchTimeTracker getTimeTracker() {
     return timeTracker;
+  }
+
+  public FlagTimeTracker getFlagTracker() {
+    return flagTracker;
   }
 
   private void registerEvents(Listener listener) {
