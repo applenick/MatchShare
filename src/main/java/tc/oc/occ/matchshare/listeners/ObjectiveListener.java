@@ -1,7 +1,13 @@
 package tc.oc.occ.matchshare.listeners;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -78,9 +84,6 @@ public class ObjectiveListener extends ShareListener {
   public void onFlagPickup(FlagPickupEvent event) {
     if (!event.isCancelled() && event.getCarrier() != null) {
       callNewEvent(new PGMFlagPickupEvent(event.getCarrier().getBukkit()));
-
-      // Start tracking flag time for player
-      plugin.getFlagTracker().startTracking(event.getCarrier().getId());
     }
   }
 
@@ -113,15 +116,77 @@ public class ObjectiveListener extends ShareListener {
     }
   }
 
+  private final int SCORE_DELAY = 10; // Time in seconds to group points
+  private final int AUTO_SCORE_THRESHOLD =
+      10; // any score over this amount will be given right away
+  private Map<UUID, ScoreRecord> scoreRecords = Maps.newHashMap();
+
   @EventHandler
   public void onPlayerScore(PlayerScoreEvent event) {
-    if (event.getPlayer() != null && event.getScore() > 0) {
-      callNewEvent(new PGMScoreEvent(event.getPlayer().getBukkit(), (int) event.getScore()));
+    if (event.getPlayer() == null) return;
+
+    UUID playerId = event.getPlayer().getId();
+    double score = event.getScore();
+
+    if (!scoreRecords.containsKey(playerId)) {
+      scoreRecords.put(playerId, new ScoreRecord(playerId));
+    }
+
+    ScoreRecord current = scoreRecords.get(playerId);
+    Duration timeSince = Duration.between(current.getLastRedeemTime(), Instant.now());
+    current.addScore(score);
+
+    if (timeSince.getSeconds() > SCORE_DELAY || current.getScore() >= AUTO_SCORE_THRESHOLD) {
+      callNewEvent(new PGMScoreEvent(event.getPlayer().getBukkit(), current.redeem()));
     }
   }
 
   @EventHandler(priority = EventPriority.HIGHEST)
   public void onMatchEnd(MatchFinishEvent event) {
-    plugin.getFlagTracker().reset();
+    // Match is over, give all remaining points
+    this.scoreRecords.entrySet().stream()
+        .filter(e -> Bukkit.getPlayer(e.getKey()) != null)
+        .forEach(
+            e -> {
+              Player player = Bukkit.getPlayer(e.getKey());
+              callNewEvent(new PGMScoreEvent(player, e.getValue().redeem()));
+            });
+
+    this.scoreRecords.clear();
+  }
+
+  private class ScoreRecord {
+    private UUID playerId;
+    private double score;
+    private Instant lastRedemption;
+
+    public ScoreRecord(UUID playerId) {
+      this.playerId = playerId;
+      this.score = 0;
+      this.lastRedemption = Instant.now();
+    }
+
+    public UUID getPlayerId() {
+      return playerId;
+    }
+
+    public void addScore(double score) {
+      this.score += score;
+    }
+
+    public int getScore() {
+      return (int) score;
+    }
+
+    public Instant getLastRedeemTime() {
+      return lastRedemption;
+    }
+
+    public int redeem() {
+      final int amount = (int) score;
+      this.score = 0;
+      this.lastRedemption = Instant.now();
+      return amount;
+    }
   }
 }

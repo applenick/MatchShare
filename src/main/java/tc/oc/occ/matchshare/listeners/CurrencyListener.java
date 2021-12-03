@@ -11,7 +11,6 @@ import tc.oc.occ.dispense.events.currency.GroupEarnCurrencyEvent;
 import tc.oc.occ.dispense.events.currency.PlayerEarnCurrencyEvent;
 import tc.oc.occ.dispense.events.objectives.PGMCoreLeakEvent;
 import tc.oc.occ.dispense.events.objectives.PGMFlagCaptureEvent;
-import tc.oc.occ.dispense.events.objectives.PGMFlagDropEvent;
 import tc.oc.occ.dispense.events.objectives.PGMMonumentDestroyEvent;
 import tc.oc.occ.dispense.events.objectives.PGMScoreEvent;
 import tc.oc.occ.dispense.events.objectives.PGMWoolCaptureEvent;
@@ -70,17 +69,6 @@ public class CurrencyListener extends ShareListener {
   @EventHandler
   public void onFlagCapture(PGMFlagCaptureEvent event) {
     callNewEvent(new PlayerEarnCurrencyEvent(event.getPlayer(), CurrencyType.FLAG_CAPTURE));
-  }
-
-  @EventHandler
-  public void onFlagDrop(PGMFlagDropEvent event) {
-    int secondsHeld =
-        Math.toIntExact(plugin.getFlagTracker().stopTracking(event.getPlayer().getUniqueId()));
-    if (secondsHeld > 0) {
-      callNewEvent(
-          new PlayerEarnCurrencyEvent(
-              event.getPlayer(), CurrencyType.FLAG_PICKUP, false, secondsHeld));
-    }
   }
 
   @EventHandler
