@@ -33,7 +33,7 @@ public class NMSHacks {
   }
 
   private static double randomEntityVelocity() {
-    return random.nextDouble();
+    return random.nextDouble() - 0.5D;
   }
 
   public static void showFakeItems(

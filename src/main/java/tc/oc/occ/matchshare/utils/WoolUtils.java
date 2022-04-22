@@ -12,6 +12,7 @@ import tc.oc.pgm.api.party.Competitor;
 import tc.oc.pgm.api.player.ParticipantState;
 import tc.oc.pgm.goals.Goal;
 import tc.oc.pgm.goals.GoalMatchModule;
+import tc.oc.pgm.goals.ShowOption;
 import tc.oc.pgm.wool.MonumentWool;
 
 public class WoolUtils {
@@ -43,7 +44,9 @@ public class WoolUtils {
       for (Goal goal : gmm.getGoals()) {
         if (goal instanceof MonumentWool) {
           MonumentWool wool = (MonumentWool) goal;
-          if (wool.isVisible() && !wool.isPlaced() && wool.getDyeColor() == color) {
+          if (wool.hasShowOption(ShowOption.STATS)
+              && !wool.isPlaced()
+              && wool.getDyeColor() == color) {
             if (wool.getOwner() == team) {
               return true;
             }
