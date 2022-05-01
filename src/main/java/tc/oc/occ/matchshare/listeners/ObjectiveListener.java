@@ -23,8 +23,8 @@ import tc.oc.occ.matchshare.MatchShare;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
 import tc.oc.pgm.core.CoreLeakEvent;
 import tc.oc.pgm.destroyable.DestroyableDestroyedEvent;
+import tc.oc.pgm.flag.Flag;
 import tc.oc.pgm.flag.event.FlagCaptureEvent;
-import tc.oc.pgm.flag.event.FlagPickupEvent;
 import tc.oc.pgm.flag.event.FlagStateChangeEvent;
 import tc.oc.pgm.flag.state.Dropped;
 import tc.oc.pgm.goals.events.GoalTouchEvent;
@@ -63,6 +63,12 @@ public class ObjectiveListener extends ShareListener {
           callNewEvent(new PGMWoolTouchEvent(event.getPlayer().getPlayer().get().getBukkit()));
         }
       }
+
+      if (event.getGoal() instanceof Flag) {
+        if (event.isFirstForPlayer()) {
+          callNewEvent(new PGMFlagPickupEvent(event.getPlayer().getPlayer().get().getBukkit()));
+        }
+      }
     }
   }
 
@@ -77,13 +83,6 @@ public class ObjectiveListener extends ShareListener {
   public void onFlagCapture(FlagCaptureEvent event) {
     if (event.getCarrier() != null) {
       callNewEvent(new PGMFlagCaptureEvent(event.getCarrier().getBukkit()));
-    }
-  }
-
-  @EventHandler(priority = EventPriority.HIGHEST)
-  public void onFlagPickup(FlagPickupEvent event) {
-    if (!event.isCancelled() && event.getCarrier() != null) {
-      callNewEvent(new PGMFlagPickupEvent(event.getCarrier().getBukkit()));
     }
   }
 
