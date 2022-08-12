@@ -8,6 +8,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import tc.oc.occ.matchshare.MatchShare;
 import tc.oc.pgm.api.integration.Integration;
 import tc.oc.pgm.api.party.Competitor;
+import tc.oc.pgm.blitz.BlitzMatchModule;
 import tc.oc.pgm.events.PlayerJoinPartyEvent;
 
 public class PlayerMetaListener extends ShareListener {
@@ -16,6 +17,7 @@ public class PlayerMetaListener extends ShareListener {
   public static final String PLAY_KEY = "isPlaying";
   public static final String MAP_KEY = "map";
   public static final String NICK_KEY = "isNicked";
+  public static final String BLITZ_KEY = "isBlitz";
 
   public PlayerMetaListener(MatchShare plugin) {
     super(plugin);
@@ -35,12 +37,15 @@ public class PlayerMetaListener extends ShareListener {
         event.getPlayer().getBukkit(),
         event.getNewParty() instanceof Competitor,
         event.getMatch().getMap().getName(),
-        event.getMatch().isRunning());
+        event.getMatch().isRunning(),
+        event.getMatch().getModule(BlitzMatchModule.class) != null);
   }
 
-  private void setMeta(Player player, boolean participating, String map, boolean running) {
+  private void setMeta(
+      Player player, boolean participating, String map, boolean running, boolean blitz) {
     player.setMetadata(MAP_KEY, new FixedMetadataValue(plugin, map));
     player.setMetadata(participating ? PLAY_KEY : OBS_KEY, new FixedMetadataValue(plugin, true));
     player.removeMetadata(participating ? OBS_KEY : PLAY_KEY, plugin);
+    player.setMetadata(BLITZ_KEY, new FixedMetadataValue(plugin, blitz));
   }
 }
