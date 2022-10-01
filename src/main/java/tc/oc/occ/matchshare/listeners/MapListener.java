@@ -1,10 +1,15 @@
 package tc.oc.occ.matchshare.listeners;
 
+import com.google.common.collect.Sets;
+import java.util.Set;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import tc.oc.occ.dispense.events.map.PGMMapListEvent;
 import tc.oc.occ.dispense.events.map.PGMMapLoadEvent;
 import tc.oc.occ.dispense.events.match.MatchStatus;
 import tc.oc.occ.dispense.events.match.PGMMatchStatusUpdateEvent;
 import tc.oc.occ.matchshare.MatchShare;
+import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.map.MapInfo;
 import tc.oc.pgm.api.match.MatchPhase;
 import tc.oc.pgm.api.match.event.MatchLoadEvent;
@@ -14,6 +19,13 @@ public class MapListener extends ShareListener {
 
   public MapListener(MatchShare plugin) {
     super(plugin);
+  }
+
+  @EventHandler(priority = EventPriority.LOWEST)
+  public void onMapListLoad(PGMMapListEvent event) {
+    Set<String> maps = Sets.newHashSet();
+    PGM.get().getMapLibrary().getMaps().forEachRemaining(map -> maps.add(map.getName()));
+    event.setMaps(maps);
   }
 
   @EventHandler
