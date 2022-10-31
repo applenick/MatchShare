@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -37,6 +38,7 @@ public class TimeTrackerListener extends ShareListener {
     List<Player> winningPlayers = Lists.newArrayList();
     List<Player> participatingPlayers = Lists.newArrayList();
     Map<Player, Duration> playerTimes = Maps.newHashMap();
+    @Nullable String winnerName = event.getWinner().getNameLegacy();
 
     // Match Info
     List<UUID> winnerIds = getWinnerIds(event.getWinners());
@@ -80,7 +82,7 @@ public class TimeTrackerListener extends ShareListener {
     callNewEvent(new PGMMatchParticipationEvent(participatingPlayers));
 
     // General end event
-    callNewEvent(new PGMMatchEndEvent(winningPlayers, playerTimes, matchLength));
+    callNewEvent(new PGMMatchEndEvent(winningPlayers, playerTimes, winnerName, matchLength));
 
     // Reset all tracker data as match is over and events have been completed
     tracker.reset();
