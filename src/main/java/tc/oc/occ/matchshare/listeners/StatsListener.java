@@ -8,8 +8,10 @@ import org.bukkit.event.EventHandler;
 import tc.oc.occ.dispense.events.players.PGMPlayerStatsEvent;
 import tc.oc.occ.dispense.events.players.data.PGMPlayerStats;
 import tc.oc.occ.matchshare.MatchShare;
+import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.match.event.MatchStatsEvent;
 import tc.oc.pgm.stats.PlayerStats;
+import tc.oc.pgm.stats.StatsMatchModule;
 
 public class StatsListener extends ShareListener {
 
@@ -19,7 +21,12 @@ public class StatsListener extends ShareListener {
 
   @EventHandler
   public void onMatchStats(MatchStatsEvent event) {
-    Map<UUID, PlayerStats> playerStats = event.getStats();
+    Match match = event.getMatch();
+    if (match == null) return;
+    StatsMatchModule stats = match.getModule(StatsMatchModule.class);
+    if (stats == null) return;
+
+    Map<UUID, PlayerStats> playerStats = stats.getStats();
     if (playerStats.isEmpty()) return;
     playerStats.forEach(
         (id, stat) -> {

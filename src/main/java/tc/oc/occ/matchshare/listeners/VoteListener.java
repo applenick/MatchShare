@@ -1,11 +1,10 @@
 package tc.oc.occ.matchshare.listeners;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import tc.oc.occ.dispense.events.players.PGMPlayerVoteEvent;
 import tc.oc.occ.matchshare.MatchShare;
-import tc.oc.pgm.api.event.PlayerVoteEvent;
+import tc.oc.pgm.api.player.MatchPlayer;
+import tc.oc.pgm.rotation.vote.events.MatchPlayerVoteEvent;
 
 public class VoteListener extends ShareListener {
 
@@ -14,10 +13,11 @@ public class VoteListener extends ShareListener {
   }
 
   @EventHandler
-  public void onPlayerVote(PlayerVoteEvent event) {
-    Player player = Bukkit.getPlayer(event.getPlayerId());
-    if (player != null) {
-      callNewEvent(new PGMPlayerVoteEvent(player, event.getMap().getName(), event.isAdd()));
+  public void onPlayerVote(MatchPlayerVoteEvent event) {
+    MatchPlayer player = event.getPlayer();
+    if (player != null && player.getBukkit() != null) {
+      callNewEvent(
+          new PGMPlayerVoteEvent(player.getBukkit(), event.getMap().getName(), event.isAdd()));
     }
   }
 }

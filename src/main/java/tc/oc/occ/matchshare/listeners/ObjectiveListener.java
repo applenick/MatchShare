@@ -28,7 +28,7 @@ import tc.oc.pgm.flag.event.FlagCaptureEvent;
 import tc.oc.pgm.flag.event.FlagStateChangeEvent;
 import tc.oc.pgm.flag.state.Dropped;
 import tc.oc.pgm.goals.events.GoalTouchEvent;
-import tc.oc.pgm.score.PlayerScoreEvent;
+import tc.oc.pgm.score.MatchPlayerScoreEvent;
 import tc.oc.pgm.wool.MonumentWool;
 import tc.oc.pgm.wool.PlayerWoolPlaceEvent;
 
@@ -121,7 +121,7 @@ public class ObjectiveListener extends ShareListener {
   private Map<UUID, ScoreRecord> scoreRecords = Maps.newHashMap();
 
   @EventHandler
-  public void onPlayerScore(PlayerScoreEvent event) {
+  public void onPlayerScore(MatchPlayerScoreEvent event) {
     if (event.getPlayer() == null) return;
 
     UUID playerId = event.getPlayer().getId();
