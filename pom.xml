@@ -20,10 +20,6 @@
             <name>PGM Repository</name>
             <url>https://repo.pgm.fyi/snapshots</url>
         </repository>
-        <repository>
-            <id>aikar</id>
-            <url>https://repo.aikar.co/content/groups/aikar/</url>
-        </repository>
     </repositories>
 
     <dependencies>
