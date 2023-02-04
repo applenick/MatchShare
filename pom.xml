@@ -42,12 +42,12 @@
         <dependency>
             <groupId>tc.oc.pgm</groupId>
             <artifactId>core</artifactId>
-            <version>0.15-SNAPSHOT</version>
+            <version>0.16-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>tc.oc.pgm</groupId>
             <artifactId>util</artifactId>
-            <version>0.15-SNAPSHOT</version>
+            <version>0.16-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
