@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.ItemStack;
 import tc.oc.occ.dispense.events.DisplayFakeItemsEvent;
+import tc.oc.occ.dispense.events.battlepass.PlayerCompleteMissionEvent;
 import tc.oc.occ.dispense.events.currency.CurrencyType;
 import tc.oc.occ.dispense.events.currency.GroupEarnCurrencyEvent;
 import tc.oc.occ.dispense.events.currency.PlayerEarnCurrencyEvent;
@@ -99,6 +100,12 @@ public class CurrencyListener extends ShareListener {
   @EventHandler
   public void onMatchPhaseChange(MatchPhaseChangeEvent event) {
     this.mapVotes.invalidateAll();
+  }
+
+  @EventHandler
+  public void onMissionComplete(PlayerCompleteMissionEvent event) {
+    callNewEvent(
+        new PlayerEarnCurrencyEvent(event.getPlayer(), event.getReward(), event.getMissionName()));
   }
 
   @EventHandler
