@@ -19,6 +19,7 @@ import tc.oc.occ.dispense.events.objectives.PGMWoolCaptureEvent;
 import tc.oc.occ.dispense.events.objectives.PGMWoolDestroyEvent;
 import tc.oc.occ.dispense.events.objectives.PGMWoolTouchEvent;
 import tc.oc.occ.dispense.events.players.PGMPlayerDeathEvent;
+import tc.oc.occ.dispense.events.players.PGMPlayerSportsmanshipEvent;
 import tc.oc.occ.dispense.events.players.PGMPlayerVoteEvent;
 import tc.oc.occ.matchshare.MatchShare;
 import tc.oc.occ.matchshare.utils.NMSHacks;
@@ -106,6 +107,11 @@ public class CurrencyListener extends ShareListener {
   public void onMissionComplete(PlayerCompleteMissionEvent event) {
     callNewEvent(
         new PlayerEarnCurrencyEvent(event.getPlayer(), event.getReward(), event.getMissionName()));
+  }
+
+  @EventHandler
+  public void onGoodSportsmanship(PGMPlayerSportsmanshipEvent event) {
+    callNewEvent(new PlayerEarnCurrencyEvent(event.getPlayer(), CurrencyType.SPORTSMANSHIP, true));
   }
 
   @EventHandler

@@ -24,6 +24,10 @@ public abstract class ShareListener implements Listener {
     plugin.getServer().getPluginManager().callEvent(event);
   }
 
+  protected void callSyncEvent(DispenseEvent event) {
+    plugin.getServer().getScheduler().runTask(plugin, () -> callNewEvent(event));
+  }
+
   protected Match getMatch() {
     return PGM.get().getMatchManager().getMatches().hasNext()
         ? PGM.get().getMatchManager().getMatches().next()
