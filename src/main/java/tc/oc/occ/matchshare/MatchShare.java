@@ -2,6 +2,7 @@ package tc.oc.occ.matchshare;
 
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import tc.oc.occ.matchshare.listeners.BlockListener;
 import tc.oc.occ.matchshare.listeners.CurrencyListener;
 import tc.oc.occ.matchshare.listeners.MapListener;
 import tc.oc.occ.matchshare.listeners.ObjectiveListener;
@@ -32,6 +33,7 @@ public class MatchShare extends JavaPlugin implements Listener {
     registerEvents(new WoolDestructionListener(this));
     registerEvents(new VoteListener(this));
     registerEvents(new StatsListener(this));
+    registerEvents(new BlockListener(this));
   }
 
   public MatchTimeTracker getTimeTracker() {
