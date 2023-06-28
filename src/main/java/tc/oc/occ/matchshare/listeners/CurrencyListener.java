@@ -111,7 +111,17 @@ public class CurrencyListener extends ShareListener {
 
   @EventHandler
   public void onGoodSportsmanship(PGMPlayerSportsmanshipEvent event) {
-    callNewEvent(new PlayerEarnCurrencyEvent(event.getPlayer(), CurrencyType.SPORTSMANSHIP, true));
+    CurrencyType type = CurrencyType.SPORTSMANSHIP_OBS;
+
+    if (event.isParticipant()) {
+      type = CurrencyType.SPORTSMANSHIP_LOSER;
+    }
+
+    if (event.isWinner()) {
+      type = CurrencyType.SPORTSMANSHIP;
+    }
+
+    callNewEvent(new PlayerEarnCurrencyEvent(event.getPlayer(), type, true));
   }
 
   @EventHandler
