@@ -19,7 +19,8 @@ import tc.oc.pgm.api.match.event.MatchPhaseChangeEvent;
 
 public class SportsmanshipListener extends ShareListener {
 
-  private final Pattern pattern = Pattern.compile("gg|good game", Pattern.CASE_INSENSITIVE);
+  private final Pattern pattern =
+      Pattern.compile("\"^(.*\\W)?(g\\S?g+|good game)(\\W.*)?$\"", Pattern.CASE_INSENSITIVE);
 
   private Cache<UUID, String> goodSports;
 
