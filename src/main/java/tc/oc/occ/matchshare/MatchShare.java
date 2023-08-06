@@ -4,6 +4,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import tc.oc.occ.matchshare.listeners.BlockListener;
 import tc.oc.occ.matchshare.listeners.CurrencyListener;
+import tc.oc.occ.matchshare.listeners.DebugListener;
 import tc.oc.occ.matchshare.listeners.MapListener;
 import tc.oc.occ.matchshare.listeners.ObjectiveListener;
 import tc.oc.occ.matchshare.listeners.ObserverListener;
@@ -24,6 +25,7 @@ public class MatchShare extends JavaPlugin implements Listener {
   public void onEnable() {
     this.timeTracker = new MatchTimeTracker();
 
+    registerEvents(new DebugListener(this));
     registerEvents(new PlayerMetaListener(this));
     registerEvents(new PlayerCombatListener(this));
     registerEvents(new TimeTrackerListener(this));
