@@ -106,7 +106,12 @@ public class CurrencyListener extends ShareListener {
   @EventHandler
   public void onMissionComplete(PlayerCompleteMissionEvent event) {
     callNewEvent(
-        new PlayerEarnCurrencyEvent(event.getPlayer(), event.getReward(), event.getMissionName()));
+        new PlayerEarnCurrencyEvent(
+            event.getPlayer(),
+            CurrencyType.MISSION_COMPLETION,
+            true,
+            event.getReward(),
+            event.getMissionName()));
   }
 
   @EventHandler
