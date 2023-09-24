@@ -1,5 +1,6 @@
 package tc.oc.occ.matchshare.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import tc.oc.occ.dispense.events.restart.PGMCancelRestartEvent;
 import tc.oc.occ.dispense.events.restart.PGMRestartEvent;
@@ -17,7 +18,10 @@ public class RestartListener extends ShareListener {
   @EventHandler
   public void onRestart(CountdownStartEvent event) {
     if (!(event.getCountdown() instanceof RestartCountdown)) return;
-    callNewEvent(new PGMRestartEvent());
+    RestartCountdown restart = (RestartCountdown) event.getCountdown();
+    int online = Bukkit.getOnlinePlayers().size();
+
+    callNewEvent(new PGMRestartEvent(restart.getRemaining(), online));
   }
 
   @EventHandler
