@@ -20,6 +20,10 @@
             <name>PGM Repository</name>
             <url>https://repo.pgm.fyi/snapshots</url>
         </repository>
+        <repository>
+			<id>aikar</id>
+			<url>https://repo.aikar.co/content/groups/aikar/</url>
+		</repository>
     </repositories>
 
     <dependencies>
@@ -43,11 +47,13 @@
             <groupId>tc.oc.pgm</groupId>
             <artifactId>core</artifactId>
             <version>0.16-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>tc.oc.pgm</groupId>
             <artifactId>util</artifactId>
             <version>0.16-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
         
         <!-- Environment -->
@@ -55,6 +61,7 @@
             <groupId>tc.oc.occ</groupId>
             <artifactId>Environment</artifactId>
             <version>1.0.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
