@@ -16,15 +16,18 @@ import tc.oc.occ.matchshare.listeners.StatsListener;
 import tc.oc.occ.matchshare.listeners.TimeTrackerListener;
 import tc.oc.occ.matchshare.listeners.VoteListener;
 import tc.oc.occ.matchshare.listeners.WoolDestructionListener;
+import tc.oc.occ.matchshare.tracker.MatchCapacityTracker;
 import tc.oc.occ.matchshare.tracker.MatchTimeTracker;
 
 public class MatchShare extends JavaPlugin implements Listener {
 
   private MatchTimeTracker timeTracker;
+  private MatchCapacityTracker capacityTracker;
 
   @Override
   public void onEnable() {
     this.timeTracker = new MatchTimeTracker();
+    this.capacityTracker = new MatchCapacityTracker(this);
 
     registerEvents(new DebugListener(this));
     registerEvents(new PlayerMetaListener(this));
