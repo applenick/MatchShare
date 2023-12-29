@@ -20,14 +20,19 @@ public class PlayerCombatListener extends ShareListener {
   public void onKill(MatchPlayerDeathEvent event) {
     Player dead = event.getPlayer().getBukkit();
     Player killer = null;
+    Player assister = null;
 
     if (event.getKiller() != null && event.getKiller().getPlayer().isPresent()) {
       killer = event.getKiller().getPlayer().get().getBukkit();
     }
 
+    if (event.getAssister() != null && event.getAssister().getPlayer().isPresent()) {
+      assister = event.getAssister().getPlayer().get().getBukkit();
+    }
+
     callNewEvent(
         new PGMPlayerDeathEvent(
-            dead, killer, event.isSelfKill(), event.isTeamKill(), event.isSuicide()));
+            dead, killer, assister, event.isSelfKill(), event.isTeamKill(), event.isSuicide()));
   }
 
   @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
