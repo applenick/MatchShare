@@ -48,7 +48,8 @@ public class CurrencyListener extends ShareListener {
       callNewEvent(new PlayerEarnCurrencyEvent(event.getKiller(), type));
 
       if (event.getAssister() != null) {
-        callNewEvent(new PlayerEarnCurrencyEvent(event.getAssister(), CurrencyType.KILL_ASSIST));
+        callNewEvent(
+            new PlayerEarnCurrencyEvent(event.getAssister(), CurrencyType.KILL_ASSIST, true));
       }
     }
   }
