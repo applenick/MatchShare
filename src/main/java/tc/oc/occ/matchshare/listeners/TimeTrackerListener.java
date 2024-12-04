@@ -1,5 +1,6 @@
 package tc.oc.occ.matchshare.listeners;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.time.Duration;
@@ -17,11 +18,13 @@ import tc.oc.occ.dispense.events.match.PGMMatchParticipationEvent;
 import tc.oc.occ.dispense.events.match.PGMMatchWinnerEvent;
 import tc.oc.occ.matchshare.MatchShare;
 import tc.oc.occ.matchshare.tracker.MatchTimeTracker;
+import tc.oc.pgm.api.integration.Integration;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
 import tc.oc.pgm.api.party.Competitor;
 import tc.oc.pgm.api.player.MatchPlayer;
 import tc.oc.pgm.events.PlayerJoinPartyEvent;
 import tc.oc.pgm.events.PlayerLeavePartyEvent;
+import tc.oc.pgm.ffa.Tribute;
 
 public class TimeTrackerListener extends ShareListener {
 
@@ -37,7 +40,80 @@ public class TimeTrackerListener extends ShareListener {
     List<Player> winningPlayers = Lists.newArrayList();
     List<Player> participatingPlayers = Lists.newArrayList();
     Map<Player, Duration> playerTimes = Maps.newHashMap();
-    String winnerName = event.getWinner() != null ? event.getWinner().getNameLegacy() : null;
+
+    Collection<Competitor> winners = event.getWinners();
+    String winnerName = null;
+
+    if (winners.size() == 1) {
+      // Single winner
+      Competitor competitor = Iterables.getOnlyElement(winners);
+
+      // For FFAs
+      if (competitor instanceof Tribute) {
+        Tribute tribute = (Tribute) competitor;
+
+        List<String> tributeNames =
+            tribute.getPlayers().stream()
+                .map(
+                    mp -> {
+                      String nickname = Integration.getNick(mp.getBukkit());
+                      return nickname != null ? nickname : mp.getNameLegacy();
+                    })
+                .collect(Collectors.toList());
+
+        if (tributeNames.size() == 1) {
+          winnerName = tributeNames.get(0);
+        } else if (tributeNames.size() == 2) {
+          winnerName = String.join(" and ", tributeNames);
+        } else {
+          String lastPlayer = tributeNames.remove(tributeNames.size() - 1);
+          winnerName = String.join(", ", tributeNames) + ", and " + lastPlayer;
+        }
+      } else {
+        winnerName = competitor.getNameLegacy();
+      }
+
+    } else if (winners.size() > 1) {
+      // Handle multiple winners
+      List<String> winnerNames =
+          winners.stream()
+              .map(
+                  winner -> {
+                    if (winner instanceof Tribute) {
+                      Tribute tribute = (Tribute) winner;
+
+                      List<String> tributeNames =
+                          tribute.getPlayers().stream()
+                              .map(
+                                  mp -> {
+                                    String nickname = Integration.getNick(mp.getBukkit());
+                                    return nickname != null ? nickname : mp.getNameLegacy();
+                                  })
+                              .collect(Collectors.toList());
+
+                      if (tributeNames.size() == 1) {
+                        return tributeNames.get(0);
+                      } else if (tributeNames.size() == 2) {
+                        return String.join(" and ", tributeNames);
+                      } else {
+                        String lastPlayer = tributeNames.remove(tributeNames.size() - 1);
+                        return String.join(", ", tributeNames) + ", and " + lastPlayer;
+                      }
+                    } else {
+                      return winner.getNameLegacy();
+                    }
+                  })
+              .collect(Collectors.toList());
+
+      if (winnerNames.size() == 2) {
+        winnerName = String.join(" and ", winnerNames);
+      } else {
+        String lastWinner = winnerNames.remove(winnerNames.size() - 1);
+        winnerName = String.join(", ", winnerNames) + ", and " + lastWinner;
+      }
+    } else {
+      winnerName = "Unknown";
+    }
 
     // Match Info
     List<UUID> winnerIds = getWinnerIds(event.getWinners());
