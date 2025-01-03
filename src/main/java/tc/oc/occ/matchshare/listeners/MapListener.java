@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import tc.oc.occ.dispense.events.map.PGMMapListEvent;
 import tc.oc.occ.dispense.events.map.PGMMapLoadEvent;
+import tc.oc.occ.dispense.events.map.PGMRefreshMapDataEvent;
 import tc.oc.occ.dispense.events.match.MatchStatus;
 import tc.oc.occ.dispense.events.match.PGMMatchStatusUpdateEvent;
 import tc.oc.occ.matchshare.MatchShare;
@@ -29,6 +30,11 @@ public class MapListener extends ShareListener {
 
   public MapListener(MatchShare plugin) {
     super(plugin);
+  }
+
+  @EventHandler
+  public void onRefreshMapData(PGMRefreshMapDataEvent event) {
+    PGM.get().getDatastore().refreshMapData();
   }
 
   @EventHandler(priority = EventPriority.LOWEST)
