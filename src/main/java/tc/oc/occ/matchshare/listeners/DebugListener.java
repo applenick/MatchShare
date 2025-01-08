@@ -1,10 +1,14 @@
 package tc.oc.occ.matchshare.listeners;
 
-import org.bukkit.ChatColor;
+import static net.kyori.adventure.text.Component.text;
+
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import tc.oc.occ.matchshare.MatchShare;
+import tc.oc.pgm.util.Audience;
 
 public class DebugListener extends ShareListener {
 
@@ -25,18 +29,20 @@ public class DebugListener extends ShareListener {
 
       boolean isGG = SportsmanshipListener.isGG(input);
 
-      player.sendMessage(
-          ChatColor.GOLD
-              + "Sportsmanship regex test"
-              + ChatColor.WHITE
-              + ": "
-              + ChatColor.GRAY
-              + "("
-              + ChatColor.AQUA
-              + input
-              + ChatColor.GRAY
-              + ")"
-              + (isGG ? ChatColor.GREEN + " matches!" : ChatColor.RED + " does not match!"));
+      Component message =
+          text()
+              .append(text("Sportsmanship regex test", NamedTextColor.GOLD))
+              .append(text(": ", NamedTextColor.WHITE))
+              .append(text("(", NamedTextColor.GRAY))
+              .append(text(input, NamedTextColor.AQUA))
+              .append(text(")", NamedTextColor.GRAY))
+              .append(
+                  isGG
+                      ? text(" matches!", NamedTextColor.GREEN)
+                      : text(" does not match!", NamedTextColor.RED))
+              .build();
+
+      Audience.get(player).sendMessage(message);
       event.setCancelled(true);
     }
   }

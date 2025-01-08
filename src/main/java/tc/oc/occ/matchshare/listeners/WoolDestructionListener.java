@@ -5,13 +5,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
 import org.bukkit.DyeColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.EntityDespawnInVoidEvent;
 import org.bukkit.event.entity.ItemMergeEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -25,6 +23,8 @@ import tc.oc.pgm.api.player.ParticipantState;
 import tc.oc.pgm.goals.Goal;
 import tc.oc.pgm.goals.GoalMatchModule;
 import tc.oc.pgm.goals.ShowOption;
+import tc.oc.pgm.util.event.entity.EntityDespawnInVoidEvent;
+import tc.oc.pgm.util.material.Materials;
 import tc.oc.pgm.wool.MonumentWool;
 
 public class WoolDestructionListener extends ShareListener {
@@ -100,7 +100,7 @@ public class WoolDestructionListener extends ShareListener {
 
   @EventHandler
   public void onWoolMerge(ItemMergeEvent event) {
-    if (event.getEntity().getItemStack().getType() == Material.WOOL) {
+    if (event.getEntity().getItemStack().getType() == Materials.WOOL) {
       if (droppedWools.containsKey(event.getEntity())) {
         event.setCancelled(true);
       }
@@ -108,7 +108,7 @@ public class WoolDestructionListener extends ShareListener {
   }
 
   private boolean isDestroyableWool(ItemStack stack, Competitor team) {
-    if (stack == null || stack.getType() != Material.WOOL) {
+    if (stack == null || stack.getType() != Materials.WOOL) {
       return false;
     }
 
