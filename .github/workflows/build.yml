@@ -24,7 +24,7 @@ jobs:
     - name: build
       run: mvn install
     - name: artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: MatchShare.jar
         path: target/MatchShare-1.0.0-SNAPSHOT.jar
