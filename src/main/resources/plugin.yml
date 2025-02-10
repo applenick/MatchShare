@@ -4,4 +4,4 @@ main: ${project.bukkit.main}
 version: ${project.version} (${git.commit.id.abbrev})
 author: ${project.author}
 softdepend: [Environment, Dewdrop]
-depend: [PGM]
+depend: [PGM, Community]

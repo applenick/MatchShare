@@ -55,14 +55,23 @@
             <version>0.16-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
-        
+
+        <!-- Community -->
+        <dependency>
+            <groupId>dev.pgm</groupId>
+            <artifactId>Community</artifactId>
+            <version>0.2-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+
         <!-- Dewdrop -->
         <dependency>
             <groupId>tc.oc.occ</groupId>
             <artifactId>Dewdrop</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
-        
+
         <!-- Environment -->
         <dependency>
             <groupId>tc.oc.occ</groupId>
@@ -119,7 +128,7 @@
                     </execution>
                 </executions>
             </plugin>
-            
+
             <!-- Allows git commit id to be used in plugin.yml -->
             <plugin>
                 <groupId>pl.project13.maven</groupId>
