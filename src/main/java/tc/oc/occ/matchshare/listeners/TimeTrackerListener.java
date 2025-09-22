@@ -1,12 +1,13 @@
 package tc.oc.occ.matchshare.listeners;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
@@ -35,134 +36,6 @@ public class TimeTrackerListener extends ShareListener {
     this.tracker = plugin.getTimeTracker();
   }
 
-  @EventHandler(priority = EventPriority.HIGH)
-  public void onMatchFinish(MatchFinishEvent event) {
-    List<Player> winningPlayers = Lists.newArrayList();
-    List<Player> participatingPlayers = Lists.newArrayList();
-    Map<Player, Duration> playerTimes = Maps.newHashMap();
-
-    Collection<Competitor> winners = event.getWinners();
-    String winnerName = null;
-
-    if (winners.size() == 1) {
-      // Single winner
-      Competitor competitor = Iterables.getOnlyElement(winners);
-
-      // For FFAs
-      if (competitor instanceof Tribute) {
-        Tribute tribute = (Tribute) competitor;
-
-        List<String> tributeNames =
-            tribute.getPlayers().stream()
-                .map(
-                    mp -> {
-                      String nickname = Integration.getNick(mp.getBukkit());
-                      return nickname != null ? nickname : mp.getNameLegacy();
-                    })
-                .collect(Collectors.toList());
-
-        if (tributeNames.size() == 1) {
-          winnerName = tributeNames.get(0);
-        } else if (tributeNames.size() == 2) {
-          winnerName = String.join(" and ", tributeNames);
-        } else {
-          String lastPlayer = tributeNames.remove(tributeNames.size() - 1);
-          winnerName = String.join(", ", tributeNames) + ", and " + lastPlayer;
-        }
-      } else {
-        winnerName = competitor.getNameLegacy();
-      }
-
-    } else if (winners.size() > 1) {
-      // Handle multiple winners
-      List<String> winnerNames =
-          winners.stream()
-              .map(
-                  winner -> {
-                    if (winner instanceof Tribute) {
-                      Tribute tribute = (Tribute) winner;
-
-                      List<String> tributeNames =
-                          tribute.getPlayers().stream()
-                              .map(
-                                  mp -> {
-                                    String nickname = Integration.getNick(mp.getBukkit());
-                                    return nickname != null ? nickname : mp.getNameLegacy();
-                                  })
-                              .collect(Collectors.toList());
-
-                      if (tributeNames.size() == 1) {
-                        return tributeNames.get(0);
-                      } else if (tributeNames.size() == 2) {
-                        return String.join(" and ", tributeNames);
-                      } else {
-                        String lastPlayer = tributeNames.remove(tributeNames.size() - 1);
-                        return String.join(", ", tributeNames) + ", and " + lastPlayer;
-                      }
-                    } else {
-                      return winner.getNameLegacy();
-                    }
-                  })
-              .collect(Collectors.toList());
-
-      if (winnerNames.size() == 2) {
-        winnerName = String.join(" and ", winnerNames);
-      } else {
-        String lastWinner = winnerNames.remove(winnerNames.size() - 1);
-        winnerName = String.join(", ", winnerNames) + ", and " + lastWinner;
-      }
-    } else {
-      winnerName = "Unknown";
-    }
-
-    // Match Info
-    List<UUID> winnerIds = getWinnerIds(event.getWinners());
-    Duration matchLength = event.getMatch().getDuration();
-
-    // Error check: if match length was for some reason 0, don't perform win logic
-    if (matchLength.isZero()) return;
-
-    // Iterate through all tracked players
-    tracker
-        .getTimeLogs()
-        .forEach(
-            (uuid, data) -> {
-
-              // End time for player
-              data.endAll();
-
-              // Make sure they're online
-              Player player = Bukkit.getPlayer(uuid);
-              if (player != null) {
-                // Check if they should be included as winners
-                if (winnerIds.contains(uuid)
-                    && event.getWinners().contains(data.getPrimaryTeam())
-                    && data.getTimePlayed(data.getPrimaryTeam()).getSeconds()
-                        >= (matchLength.getSeconds() * 0.5)) {
-                  winningPlayers.add(player);
-                }
-
-                // Ensure they have enough time for participating progress
-                if (data.getTotalTime().getSeconds() >= matchLength.getSeconds() * 0.35) {
-                  participatingPlayers.add(player);
-                }
-
-                // Include time played on the player's primary team
-                playerTimes.put(player, data.getTimePlayed(data.getPrimaryTeam()));
-              }
-            });
-
-    // Call Events for winner & participating
-    callNewEvent(new PGMMatchWinnerEvent(winningPlayers));
-    callNewEvent(new PGMMatchParticipationEvent(participatingPlayers));
-
-    // General end event
-    callNewEvent(new PGMMatchEndEvent(winningPlayers, playerTimes, winnerName, matchLength));
-
-    // Reset all tracker data as match is over and events have been completed
-    tracker.reset();
-  }
-
   @EventHandler
   public void onPlayerJoinMatch(PlayerJoinPartyEvent event) {
     // End time tracking for old party
@@ -183,12 +56,109 @@ public class TimeTrackerListener extends ShareListener {
     }
   }
 
-  private List<UUID> getWinnerIds(Collection<Competitor> winners) {
-    List<UUID> winnerIds = Lists.newArrayList();
+  @EventHandler(priority = EventPriority.HIGH)
+  public void onMatchFinish(MatchFinishEvent event) {
+    final Collection<Competitor> winners = event.getWinners();
+    final String winnerName = formatWinnerNames(winners);
+
+    final Duration matchLength = event.getMatch().getDuration();
+    if (matchLength.isZero() || matchLength.isNegative()) return;
+
+    final long matchSeconds = matchLength.getSeconds();
+    final long winThresholdSeconds = Math.round(matchSeconds * 0.50);
+    final long participationThresholdSeconds = Math.round(matchSeconds * 0.35);
+
+    final Set<UUID> winnerIds = getWinnerIds(winners);
+
+    final List<Player> winningPlayers = Lists.newArrayList();
+    final List<Player> participatingPlayers = Lists.newArrayList();
+    final Map<Player, Duration> playerTimes = Maps.newHashMap();
+
+    tracker
+        .getTimeLogs()
+        .forEach(
+            (uuid, data) -> {
+              data.endAll(); // End tracking for match
+
+              // Online check
+              final Player player = Bukkit.getPlayer(uuid);
+              if (player == null) return;
+
+              final Duration teamTime = data.getTimePlayed(data.getPrimaryTeam());
+              playerTimes.put(player, teamTime);
+
+              final boolean qualifiedWinner =
+                  winnerIds.contains(uuid)
+                      && winners.contains(data.getPrimaryTeam())
+                      && teamTime.getSeconds() >= winThresholdSeconds;
+
+              if (qualifiedWinner) {
+                winningPlayers.add(player);
+              }
+
+              if (data.getTotalTime().getSeconds() >= participationThresholdSeconds) {
+                participatingPlayers.add(player);
+              }
+            });
+
+    // call events for winners & participants
+    callNewEvent(new PGMMatchWinnerEvent(winningPlayers));
+    callNewEvent(new PGMMatchParticipationEvent(participatingPlayers));
+    callNewEvent(new PGMMatchEndEvent(winningPlayers, playerTimes, winnerName, matchLength));
+
+    // Reset all tracker data as match is over and events have been completed
+    tracker.reset();
+  }
+
+  private Set<UUID> getWinnerIds(Collection<Competitor> winners) {
+    Set<UUID> winnerIds = Sets.newHashSet();
     for (Competitor winner : winners) {
       winnerIds.addAll(
           winner.getPlayers().stream().map(MatchPlayer::getId).collect(Collectors.toList()));
     }
     return winnerIds;
+  }
+
+  private static String formatWinnerNames(Collection<Competitor> winners) {
+    if (winners == null || winners.isEmpty()) return "Unknown";
+
+    final List<String> names =
+        winners.stream()
+            .map(TimeTrackerListener::getDisplayName)
+            .filter(s -> s != null && !s.isEmpty())
+            .collect(Collectors.toList());
+
+    if (names.isEmpty()) return "Unknown";
+    if (names.size() == 1) return names.get(0);
+    if (names.size() == 2) return names.get(0) + " and " + names.get(1);
+    return joinNames(names);
+  }
+
+  private static String getDisplayName(Competitor competitor) {
+    if (competitor instanceof Tribute) {
+      return getTributePlayerName((Tribute) competitor);
+    }
+    return competitor != null ? competitor.getNameLegacy() : null;
+  }
+
+  private static String getTributePlayerName(Tribute tribute) {
+    if (tribute == null) return null;
+    return tribute.getPlayers().stream()
+        .findFirst()
+        .map(
+            mp -> {
+              String nick = Integration.getNick(mp.getBukkit());
+              return (nick != null && !nick.isEmpty()) ? nick : mp.getNameLegacy();
+            })
+        .orElse(null);
+  }
+
+  private static String joinNames(List<String> names) {
+    int size = names.size();
+    if (size == 0) return "";
+    if (size == 1) return names.get(0);
+    if (size == 2) return names.get(0) + " and " + names.get(1);
+    String last = names.get(size - 1);
+    return String.join(", ", names.subList(0, size - 1)) + ", and " + last;
   }
 }
