@@ -1,0 +1,7 @@
+name: MatchShare
+description: ${description}
+main: ${mainClass}
+version: ${version} (git-${commitHash})
+author: ${author}
+softdepend: [Environment, Dewdrop]
+depend: [PGM, Community]
