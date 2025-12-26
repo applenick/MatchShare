@@ -1,5 +1,6 @@
 package tc.oc.occ.matchshare;
 
+import java.util.logging.Level;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import tc.oc.occ.matchshare.listeners.AssistanceListener;
@@ -21,6 +22,7 @@ import tc.oc.occ.matchshare.listeners.WebsiteListener;
 import tc.oc.occ.matchshare.listeners.WoolDestructionListener;
 import tc.oc.occ.matchshare.tracker.MatchCapacityTracker;
 import tc.oc.occ.matchshare.tracker.MatchTimeTracker;
+import tc.oc.occ.matchshare.util.Platform;
 
 public class MatchShare extends JavaPlugin implements Listener {
 
@@ -31,6 +33,13 @@ public class MatchShare extends JavaPlugin implements Listener {
   public void onEnable() {
     this.timeTracker = new MatchTimeTracker();
     this.capacityTracker = new MatchCapacityTracker(this);
+
+    try {
+      Platform.init();
+    } catch (Throwable t) {
+      getLogger().log(Level.SEVERE, "Failed to initialize MatchShare platform", t);
+      getServer().getPluginManager().disablePlugin(this);
+    }
 
     registerEvents(new DebugListener(this));
     registerEvents(new PlayerMetaListener(this));
@@ -56,6 +65,7 @@ public class MatchShare extends JavaPlugin implements Listener {
   }
 
   private void registerEvents(Listener listener) {
+    Platform.MANIFEST.onEnable(this);
     getServer().getPluginManager().registerEvents(listener, this);
   }
 }

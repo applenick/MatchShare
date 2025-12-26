@@ -8,7 +8,6 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import tc.oc.pgm.util.platform.Platform;
 
 public interface MiscUtils {
   MiscUtils MISC_UTILS = Platform.get(MiscUtils.class);
@@ -16,6 +15,8 @@ public interface MiscUtils {
   static double randomEntityVelocity() {
     return new Random().nextDouble() - 0.5D;
   }
+
+  void dummy();
 
   void sendPacket(Player bukkitPlayer, Object packet);
 

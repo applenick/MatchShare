@@ -1,6 +1,6 @@
 package tc.oc.occ.matchshare.platform.sportpaper;
 
-import static tc.oc.pgm.util.platform.Supports.Variant.SPORTPAPER;
+import static tc.oc.occ.matchshare.util.Supports.Variant.SPORTPAPER;
 
 import java.time.Duration;
 import java.util.UUID;
@@ -19,7 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import tc.oc.occ.matchshare.util.MiscUtils;
-import tc.oc.pgm.util.platform.Supports;
+import tc.oc.occ.matchshare.util.Supports;
 
 /**
  * Took some stuff from
@@ -28,6 +28,9 @@ import tc.oc.pgm.util.platform.Supports;
  */
 @Supports(SPORTPAPER)
 public class SpMiscUtils implements MiscUtils {
+  @Override
+  public void dummy() {}
+
   @Override
   public void sendPacket(Player bukkitPlayer, Object packet) {
     if (bukkitPlayer.isOnline()) {

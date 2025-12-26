@@ -50,7 +50,7 @@ public class MapListener extends ShareListener {
     String name = map.getName();
     String desc = map.getDescription();
     int maxPlayers = map.getMaxPlayers().stream().reduce(0, Integer::sum);
-    String gamemode = "";
+    String gamemode;
 
     TextComponent.Builder gmc = text();
     Collection<Gamemode> gamemodes = map.getGamemodes();
