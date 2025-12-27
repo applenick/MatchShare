@@ -55,6 +55,7 @@ tasks {
             expand(
                 mapOf(
                     "description" to description,
+                    "apiVersion" to "1.21.11",
                     "mainClass" to "tc.oc.occ.matchshare.MatchShare",
                     "version" to version,
                     "commitHash" to commitHash,

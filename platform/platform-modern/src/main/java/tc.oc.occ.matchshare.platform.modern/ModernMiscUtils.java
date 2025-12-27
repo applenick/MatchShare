@@ -4,13 +4,14 @@ import static tc.oc.occ.matchshare.util.Supports.Variant.PAPER;
 
 import java.time.Duration;
 import java.util.UUID;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.phys.Vec3;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.block.CraftBlock;
@@ -22,7 +23,7 @@ import org.bukkit.plugin.Plugin;
 import tc.oc.occ.matchshare.util.MiscUtils;
 import tc.oc.occ.matchshare.util.Supports;
 
-@Supports(value = PAPER, minVersion = "1.21.6")
+@Supports(value = PAPER, minVersion = "1.21.11")
 public class ModernMiscUtils implements MiscUtils {
   @Override
   public void dummy() {}
@@ -81,9 +82,17 @@ public class ModernMiscUtils implements MiscUtils {
       sendPacket(
           viewer,
           new ClientboundAddEntityPacket(
-              entity,
-              2,
-              new BlockPos(location.getBlockX(), location.getBlockY(), location.getBlockZ())));
+              entity.getId(),
+              entity.getUUID(),
+              location.getX(),
+              location.getY(),
+              location.getZ(),
+              entity.getXRot(),
+              entity.getYRot(),
+              EntityType.ITEM,
+              0,
+              new Vec3(0, 0, 0), // most closely replicates legacy behaviour
+              0.0));
       sendPacket(
           viewer,
           new ClientboundSetEntityDataPacket(

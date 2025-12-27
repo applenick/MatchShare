@@ -1,5 +1,6 @@
 name: MatchShare
 description: ${description}
+api-version: ${apiVersion}
 main: ${mainClass}
 version: ${version} (git-${commitHash})
 author: ${author}
