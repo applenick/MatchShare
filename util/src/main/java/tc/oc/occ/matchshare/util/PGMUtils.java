@@ -1,8 +1,8 @@
 package tc.oc.occ.matchshare.util;
 
-import javax.annotation.Nullable;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.Nullable;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.match.Match;
 

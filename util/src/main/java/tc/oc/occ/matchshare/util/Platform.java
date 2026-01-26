@@ -5,7 +5,7 @@ import static org.reflections.scanners.Scanners.TypesAnnotated;
 import java.util.Arrays;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
@@ -33,7 +33,7 @@ public abstract class Platform {
         .orElse(null);
   }
 
-  public static final @NotNull Manifest MANIFEST = get(Manifest.class);
+  public static final @NonNull Manifest MANIFEST = get(Manifest.class);
 
   /**
    * Do a minimum sanity-check of the platform's viability and early-load some codepaths
@@ -44,7 +44,7 @@ public abstract class Platform {
     MiscUtils.MISC_UTILS.dummy();
   }
 
-  public static <T> @NotNull T get(Class<T> clazz) {
+  public static <T> @NonNull T get(Class<T> clazz) {
     return (T) Platform.getBestSupported(clazz);
   }
 

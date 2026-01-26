@@ -23,7 +23,7 @@ import org.bukkit.plugin.Plugin;
 import tc.oc.occ.matchshare.util.MiscUtils;
 import tc.oc.occ.matchshare.util.Supports;
 
-@Supports(value = PAPER, minVersion = "1.21.11")
+@Supports(value = PAPER, minVersion = "1.21.10")
 public class ModernMiscUtils implements MiscUtils {
   @Override
   public void dummy() {}

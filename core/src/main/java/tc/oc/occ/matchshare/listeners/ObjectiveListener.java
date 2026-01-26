@@ -109,7 +109,7 @@ public class ObjectiveListener extends ShareListener {
   private final int SCORE_DELAY = 10; // Time in seconds to group points
   private final int AUTO_SCORE_THRESHOLD =
       10; // any score over this amount will be given right away
-  private Map<UUID, ScoreRecord> scoreRecords = Maps.newHashMap();
+  private final Map<UUID, ScoreRecord> scoreRecords = Maps.newHashMap();
 
   @EventHandler
   public void onPlayerScore(MatchPlayerScoreEvent event) {
@@ -144,8 +144,8 @@ public class ObjectiveListener extends ShareListener {
     this.scoreRecords.clear();
   }
 
-  private class ScoreRecord {
-    private UUID playerId;
+  private static class ScoreRecord {
+    private final UUID playerId;
     private double score;
     private Instant lastRedemption;
 

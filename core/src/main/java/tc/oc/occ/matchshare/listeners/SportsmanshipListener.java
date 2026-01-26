@@ -22,7 +22,7 @@ public class SportsmanshipListener extends ShareListener {
   private static final Pattern pattern =
       Pattern.compile("\\b(?:gg|good game|great game)\\b", Pattern.CASE_INSENSITIVE);
 
-  private Cache<UUID, String> goodSports;
+  private final Cache<UUID, String> goodSports;
 
   private List<Player> winners;
   private List<Player> participants;

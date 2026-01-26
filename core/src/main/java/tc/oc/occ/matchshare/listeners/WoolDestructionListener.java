@@ -29,7 +29,7 @@ import tc.oc.pgm.wool.MonumentWool;
 
 public class WoolDestructionListener extends ShareListener {
 
-  private Map<Item, UUID> droppedWools;
+  private final Map<Item, UUID> droppedWools;
   private final HashMultimap<DyeColor, UUID> destroyedWools;
 
   public WoolDestructionListener(MatchShare plugin) {

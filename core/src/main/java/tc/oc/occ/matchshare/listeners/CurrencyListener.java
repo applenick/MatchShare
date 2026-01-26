@@ -29,7 +29,7 @@ import tc.oc.pgm.api.match.event.MatchPhaseChangeEvent;
 
 public class CurrencyListener extends ShareListener {
 
-  private Cache<UUID, String> mapVotes;
+  private final Cache<UUID, String> mapVotes;
 
   public CurrencyListener(MatchShare plugin) {
     super(plugin);

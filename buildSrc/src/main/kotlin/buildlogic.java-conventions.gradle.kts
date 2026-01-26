@@ -19,14 +19,15 @@ repositories {
 
 dependencies {
     api("tc.oc.occ:Dispense:1.0.0-SNAPSHOT")
+    api("org.jspecify:jspecify:1.0.0")
 
     compileOnly("dev.pgm.community:core:0.2-SNAPSHOT")
-    compileOnly("dev.pgm.paper:paper-api:1.8_1.21.11-SNAPSHOT")
+    compileOnly("dev.pgm.paper:paper-api:1.8_1.21.10-SNAPSHOT")
     compileOnly("tc.oc.pgm:core:0.16-SNAPSHOT")
     compileOnly("tc.oc.pgm:util:0.16-SNAPSHOT")
     compileOnly("tc.oc.occ:Dewdrop:1.0.0-SNAPSHOT")
     compileOnly("tc.oc.occ:Environment:1.0.0-SNAPSHOT")
-    compileOnly("org.jetbrains:annotations:26.0.2")
+    compileOnly("org.jetbrains:annotations:26.0.2-1")
 
     compileOnly("com.google.guava:guava:17.0")
 }
@@ -48,13 +49,15 @@ spotless {
     ratchetFrom = "a007e1fa4a53d1d915bea3cf2617070b2d96e0c5"
     java {
         removeUnusedImports()
-        palantirJavaFormat("2.83.0").style("GOOGLE").formatJavadoc(true)
+        trimTrailingWhitespace()
+        formatAnnotations()
+        palantirJavaFormat("2.85.0").style("GOOGLE").formatJavadoc(true)
     }
 }
 
 restrictImports {
     group {
-        reason = "Use org.jetbrains.annotations to add annotations"
+        reason = "Use org.jspecify.annotations to add annotations, or org.jetbrains.annotations if needed"
         bannedImports = listOf("javax.annotation.**")
     }
     group {

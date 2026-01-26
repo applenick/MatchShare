@@ -9,7 +9,7 @@ import tc.oc.pgm.api.party.Competitor;
 
 public class PlayerMatchTracker {
 
-  private Map<Competitor, TeamTimeRecord> timeLogs;
+  private final Map<Competitor, TeamTimeRecord> timeLogs;
 
   public PlayerMatchTracker() {
     this.timeLogs = Maps.newHashMap();

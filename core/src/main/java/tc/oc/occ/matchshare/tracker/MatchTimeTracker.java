@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public class MatchTimeTracker {
 
-  private Map<UUID, PlayerMatchTracker> matchData;
+  private final Map<UUID, PlayerMatchTracker> matchData;
 
   public MatchTimeTracker() {
     this.matchData = Maps.newHashMap();
