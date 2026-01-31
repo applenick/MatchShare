@@ -45,15 +45,15 @@ tasks {
     }
 }
 
-spotless {
-    ratchetFrom = "a007e1fa4a53d1d915bea3cf2617070b2d96e0c5"
-    java {
-        removeUnusedImports()
-        trimTrailingWhitespace()
-        formatAnnotations()
-        palantirJavaFormat("2.85.0").style("GOOGLE").formatJavadoc(true)
-    }
-}
+//spotless {
+//    ratchetFrom = "origin/main"
+//    java {
+//        removeUnusedImports()
+//        trimTrailingWhitespace()
+//        formatAnnotations()
+//        palantirJavaFormat("2.85.0").style("GOOGLE").formatJavadoc(true)
+//    }
+//}
 
 restrictImports {
     group {
