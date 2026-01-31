@@ -1,5 +1,7 @@
 package tc.oc.occ.matchshare.listeners;
 
+import static tc.oc.occ.matchshare.utils.WoolUtils.WOOL;
+
 import com.google.common.collect.HashMultimap;
 import java.util.Map;
 import java.util.UUID;
@@ -24,7 +26,6 @@ import tc.oc.pgm.goals.Goal;
 import tc.oc.pgm.goals.GoalMatchModule;
 import tc.oc.pgm.goals.ShowOption;
 import tc.oc.pgm.util.event.entity.EntityDespawnInVoidEvent;
-import tc.oc.pgm.util.material.Materials;
 import tc.oc.pgm.wool.MonumentWool;
 
 public class WoolDestructionListener extends ShareListener {
@@ -100,7 +101,7 @@ public class WoolDestructionListener extends ShareListener {
 
   @EventHandler
   public void onWoolMerge(ItemMergeEvent event) {
-    if (event.getEntity().getItemStack().getType() == Materials.WOOL) {
+    if (WOOL.matches(event.getEntity().getItemStack().getType())) {
       if (droppedWools.containsKey(event.getEntity())) {
         event.setCancelled(true);
       }
@@ -108,7 +109,7 @@ public class WoolDestructionListener extends ShareListener {
   }
 
   private boolean isDestroyableWool(ItemStack stack, Competitor team) {
-    if (stack == null || stack.getType() != Materials.WOOL) {
+    if (stack == null || !WOOL.matches(stack.getType())) {
       return false;
     }
 

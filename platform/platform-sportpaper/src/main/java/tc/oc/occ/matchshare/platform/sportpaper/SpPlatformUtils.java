@@ -18,7 +18,7 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import tc.oc.occ.matchshare.util.MiscUtils;
+import tc.oc.occ.matchshare.util.PlatformUtils;
 import tc.oc.occ.matchshare.util.Supports;
 
 /**
@@ -27,7 +27,7 @@ import tc.oc.occ.matchshare.util.Supports;
  * for fancy item drops
  */
 @Supports(SPORTPAPER)
-public class SpMiscUtils implements MiscUtils {
+public class SpPlatformUtils implements PlatformUtils {
   @Override
   public void dummy() {}
 
@@ -77,9 +77,9 @@ public class SpMiscUtils implements MiscUtils {
           location.getZ(),
           CraftItemStack.asNMSCopy(item));
 
-      entity.motX = MiscUtils.randomEntityVelocity();
-      entity.motY = MiscUtils.randomEntityVelocity();
-      entity.motZ = MiscUtils.randomEntityVelocity();
+      entity.motX = PlatformUtils.randomEntityVelocity();
+      entity.motY = PlatformUtils.randomEntityVelocity();
+      entity.motZ = PlatformUtils.randomEntityVelocity();
 
       sendPacket(viewer, new PacketPlayOutSpawnEntity(entity, 2));
       sendPacket(

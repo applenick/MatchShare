@@ -1,6 +1,6 @@
 package tc.oc.occ.matchshare.listeners;
 
-import static tc.oc.occ.matchshare.util.MiscUtils.MISC_UTILS;
+import static tc.oc.occ.matchshare.util.PlatformUtils.PLATFORM_UTILS;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -24,7 +24,7 @@ public class BlockListener extends ShareListener {
 
     if (block == null || block.getType() == Material.AIR) return;
     if (player == null || !player.isOnline() || !isParticipating(player)) return;
-    if (MISC_UTILS.getBlockStrength(block) < 0.5) return;
+    if (PLATFORM_UTILS.getBlockStrength(block) < 0.5) return;
 
     callNewEvent(new PGMPlayerBlockBreakEvent(player, block));
   }

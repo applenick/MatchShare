@@ -41,7 +41,7 @@ public abstract class Platform {
    * @throws Throwable could throw even class not found issues if loading in the wrong version
    */
   public static void init() throws Throwable {
-    MiscUtils.MISC_UTILS.dummy();
+    PlatformUtils.PLATFORM_UTILS.dummy();
   }
 
   public static <T> @NonNull T get(Class<T> clazz) {

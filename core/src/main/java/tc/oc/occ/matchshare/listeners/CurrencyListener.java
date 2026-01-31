@@ -1,6 +1,6 @@
 package tc.oc.occ.matchshare.listeners;
 
-import static tc.oc.occ.matchshare.util.MiscUtils.MISC_UTILS;
+import static tc.oc.occ.matchshare.util.PlatformUtils.PLATFORM_UTILS;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -24,7 +24,7 @@ import tc.oc.occ.dispense.events.players.PGMPlayerDeathEvent;
 import tc.oc.occ.dispense.events.players.PGMPlayerSportsmanshipEvent;
 import tc.oc.occ.dispense.events.players.PGMPlayerVoteEvent;
 import tc.oc.occ.matchshare.MatchShare;
-import tc.oc.occ.matchshare.util.WoolUtils;
+import tc.oc.occ.matchshare.utils.WoolUtils;
 import tc.oc.pgm.api.match.event.MatchPhaseChangeEvent;
 
 public class CurrencyListener extends ShareListener {
@@ -135,7 +135,7 @@ public class CurrencyListener extends ShareListener {
 
   @EventHandler
   public void onDisplayEffect(DisplayFakeItemsEvent event) {
-    MISC_UTILS.showFakeItems(
+    PLATFORM_UTILS.showFakeItems(
         plugin,
         event.getPlayer(),
         event.getLocation(),

@@ -1,4 +1,4 @@
-package tc.oc.occ.matchshare.util;
+package tc.oc.occ.matchshare.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;

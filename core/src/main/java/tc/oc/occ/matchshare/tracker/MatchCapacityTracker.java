@@ -2,7 +2,7 @@ package tc.oc.occ.matchshare.tracker;
 
 import tc.oc.occ.environment.Environment;
 import tc.oc.occ.matchshare.MatchShare;
-import tc.oc.occ.matchshare.util.PGMUtils;
+import tc.oc.occ.matchshare.utils.PGMUtils;
 import tc.oc.pgm.api.match.Match;
 
 public class MatchCapacityTracker {

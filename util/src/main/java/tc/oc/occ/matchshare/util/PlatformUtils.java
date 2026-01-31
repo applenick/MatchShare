@@ -9,8 +9,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-public interface MiscUtils {
-  MiscUtils MISC_UTILS = Platform.get(MiscUtils.class);
+public interface PlatformUtils {
+  PlatformUtils PLATFORM_UTILS = Platform.get(PlatformUtils.class);
 
   static double randomEntityVelocity() {
     return new Random().nextDouble() - 0.5D;

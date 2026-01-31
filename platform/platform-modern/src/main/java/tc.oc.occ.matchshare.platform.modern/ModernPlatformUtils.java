@@ -20,11 +20,11 @@ import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import tc.oc.occ.matchshare.util.MiscUtils;
+import tc.oc.occ.matchshare.util.PlatformUtils;
 import tc.oc.occ.matchshare.util.Supports;
 
 @Supports(value = PAPER, minVersion = "1.21.10")
-public class ModernMiscUtils implements MiscUtils {
+public class ModernPlatformUtils implements PlatformUtils {
   @Override
   public void dummy() {}
 
@@ -75,9 +75,9 @@ public class ModernMiscUtils implements MiscUtils {
           CraftItemStack.asNMSCopy(item));
 
       entity.setDeltaMovement(
-          MiscUtils.randomEntityVelocity(),
-          MiscUtils.randomEntityVelocity(),
-          MiscUtils.randomEntityVelocity());
+          PlatformUtils.randomEntityVelocity(),
+          PlatformUtils.randomEntityVelocity(),
+          PlatformUtils.randomEntityVelocity());
 
       sendPacket(
           viewer,
