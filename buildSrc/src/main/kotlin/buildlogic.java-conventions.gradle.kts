@@ -11,10 +11,11 @@ java {
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
+    maven("https://repo.papermc.io/repository/maven-public/") // PaperMC
     maven("https://oss.sonatype.org/content/repositories/snapshots/") // Snapshots
-    maven("https://repo.pgm.fyi/snapshots/") // PGM-specific depdencies
+    maven("https://repo.pgm.fyi/snapshots/") // PGM-specific dependencies
+    mavenLocal() // keep local last
 }
 
 dependencies {
