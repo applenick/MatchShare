@@ -71,4 +71,8 @@ tasks {
     named("build") {
         dependsOn(shadowJar)
     }
+
+    withType<PublishToMavenRepository>().configureEach {
+        dependsOn(shadowJar)
+    }
 }
