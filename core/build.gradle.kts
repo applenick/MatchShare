@@ -72,7 +72,7 @@ tasks {
         dependsOn(shadowJar)
     }
 
-    withType<PublishToMavenRepository>().configureEach {
+    named("publish") {
         dependsOn(shadowJar)
     }
 }
