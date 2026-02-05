@@ -48,15 +48,14 @@ tasks {
     }
 }
 
-//spotless {
-//    ratchetFrom = "origin/main"
-//    java {
-//        removeUnusedImports()
-//        trimTrailingWhitespace()
-//        formatAnnotations()
-//        palantirJavaFormat("2.85.0").style("GOOGLE").formatJavadoc(true)
-//    }
-//}
+spotless {
+    java {
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        formatAnnotations()
+        palantirJavaFormat("2.86.0").style("GOOGLE").formatJavadoc(true)
+    }
+}
 
 restrictImports {
     group {
