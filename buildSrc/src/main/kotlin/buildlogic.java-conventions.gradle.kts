@@ -6,7 +6,7 @@ plugins {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
@@ -19,18 +19,16 @@ repositories {
 }
 
 dependencies {
-    api("tc.oc.occ:Dispense:1.0.0-SNAPSHOT")
     api("org.jspecify:jspecify:1.0.0")
+    compileOnly("org.jetbrains:annotations:26.1.0")
 
+    compileOnly("tc.oc.occ:Dispense:1.0.0-SNAPSHOT")
     compileOnly("dev.pgm.community:core:0.2-SNAPSHOT")
-    compileOnly("dev.pgm.paper:paper-api:1.8_1.21.10-SNAPSHOT")
+    compileOnly("dev.pgm.paper:paper-api:1.8_1.21.11-SNAPSHOT")
     compileOnly("tc.oc.pgm:core:0.16-SNAPSHOT")
     compileOnly("tc.oc.pgm:util:0.16-SNAPSHOT")
-    compileOnly("tc.oc.occ:Dewdrop:1.0.0-SNAPSHOT") {
-        isTransitive = false
-    }
+    compileOnly("tc.oc.occ:Dewdrop:1.0.0-SNAPSHOT") { isTransitive = false }
     compileOnly("tc.oc.occ:Environment:1.0.0-SNAPSHOT")
-    compileOnly("org.jetbrains:annotations:26.0.2-1")
 
     compileOnly("com.google.guava:guava:17.0")
 }
@@ -48,15 +46,14 @@ tasks {
     }
 }
 
-//spotless {
-//    ratchetFrom = "origin/main"
-//    java {
-//        removeUnusedImports()
-//        trimTrailingWhitespace()
-//        formatAnnotations()
-//        palantirJavaFormat("2.85.0").style("GOOGLE").formatJavadoc(true)
-//    }
-//}
+spotless {
+    java {
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        formatAnnotations()
+        palantirJavaFormat("2.96.0").style("GOOGLE").formatJavadoc(true)
+    }
+}
 
 restrictImports {
     group {

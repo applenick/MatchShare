@@ -3,6 +3,7 @@ package tc.oc.occ.matchshare.util;
 import static org.reflections.scanners.Scanners.TypesAnnotated;
 
 import java.util.Arrays;
+import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.jspecify.annotations.NonNull;
@@ -20,13 +21,23 @@ public abstract class Platform {
       .addUrls(ClasspathHelper.forPackage("tc.oc.occ.matchshare", Platform.class.getClassLoader()))
       .forPackage("tc.oc.occ.matchshare.platform")
       .setScanners(TypesAnnotated));
+  private static final Pattern VERSION_MATCHER = Pattern.compile("\\d+(?:\\.\\d+){1,2}");
 
   public static final Version MINECRAFT_VERSION;
   public static final Variant VARIANT;
 
+  private static Version parseServerVersion(final @NonNull String versionName) {
+    var matcher = VERSION_MATCHER.matcher(versionName);
+
+    if (!matcher.find())
+      throw new IllegalArgumentException("Could not parse server version from: " + versionName);
+
+    return TextParser.parseVersion(matcher.group());
+  }
+
   static {
     var sv = Bukkit.getServer();
-    MINECRAFT_VERSION = TextParser.parseVersion(sv.getBukkitVersion().split("-")[0]);
+    MINECRAFT_VERSION = parseServerVersion(sv.getBukkitVersion());
     VARIANT = Arrays.stream(Variant.values())
         .filter(v -> v.matcher.test(sv))
         .findFirst()

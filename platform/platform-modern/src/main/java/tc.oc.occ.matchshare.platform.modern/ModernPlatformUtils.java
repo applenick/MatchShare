@@ -9,7 +9,7 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.Location;
@@ -23,7 +23,7 @@ import org.bukkit.plugin.Plugin;
 import tc.oc.occ.matchshare.util.PlatformUtils;
 import tc.oc.occ.matchshare.util.Supports;
 
-@Supports(value = PAPER, minVersion = "1.21.10")
+@Supports(value = PAPER, minVersion = "26.2")
 public class ModernPlatformUtils implements PlatformUtils {
   @Override
   public void dummy() {}
@@ -89,7 +89,7 @@ public class ModernPlatformUtils implements PlatformUtils {
               location.getZ(),
               entity.getXRot(),
               entity.getYRot(),
-              EntityType.ITEM,
+              EntityTypes.ITEM,
               0,
               new Vec3(0, 0, 0), // most closely replicates legacy behaviour
               0.0));
@@ -106,6 +106,9 @@ public class ModernPlatformUtils implements PlatformUtils {
 
   @Override
   public float getBlockStrength(Block block) {
-    return ((CraftBlock) block).getNMS().destroySpeed;
+    final CraftBlock craftBlock = (CraftBlock) block;
+    return craftBlock
+        .getBlockState()
+        .getDestroySpeed(craftBlock.getLevel(), craftBlock.getPosition());
   }
 }

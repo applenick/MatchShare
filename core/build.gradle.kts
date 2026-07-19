@@ -7,7 +7,7 @@ plugins {
 }
 
 dependencies {
-    compileOnly("dev.pgm.paper:paper-api:1.8_1.21.10-SNAPSHOT")
+    compileOnly("dev.pgm.paper:paper-api:1.8_1.21.11-SNAPSHOT")
 
     implementation(project(":util"))
 
@@ -50,14 +50,16 @@ tasks {
         val version = project.version.toString()
         val commitHash = project.latestCommitHash()
 
+        inputs.property("commitHash", commitHash)
+
         filesMatching(listOf("plugin.yml")) {
             expand(
                 mapOf(
                     "description" to description,
-                    "apiVersion" to "1.21.10",
+                    "apiVersion" to "26.2",
                     "mainClass" to "tc.oc.occ.matchshare.MatchShare",
                     "version" to version,
-                    "commitHash" to commitHash,
+                    "commitHash" to commitHash.get(),
                     "author" to "applenick"
                 )
             )

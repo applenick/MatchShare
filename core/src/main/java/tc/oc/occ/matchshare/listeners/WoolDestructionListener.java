@@ -1,6 +1,7 @@
 package tc.oc.occ.matchshare.listeners;
 
 import static tc.oc.occ.matchshare.utils.WoolUtils.WOOL;
+import static tc.oc.pgm.util.material.ColorUtils.COLOR_UTILS;
 
 import com.google.common.collect.HashMultimap;
 import java.util.Map;
@@ -16,7 +17,6 @@ import org.bukkit.event.entity.ItemMergeEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.Wool;
 import tc.oc.occ.dispense.events.objectives.PGMWoolDestroyEvent;
 import tc.oc.occ.matchshare.MatchShare;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
@@ -26,6 +26,7 @@ import tc.oc.pgm.goals.Goal;
 import tc.oc.pgm.goals.GoalMatchModule;
 import tc.oc.pgm.goals.ShowOption;
 import tc.oc.pgm.util.event.entity.EntityDespawnInVoidEvent;
+import tc.oc.pgm.util.material.MaterialData;
 import tc.oc.pgm.wool.MonumentWool;
 
 public class WoolDestructionListener extends ShareListener {
@@ -57,7 +58,12 @@ public class WoolDestructionListener extends ShareListener {
 
     for (ItemStack ingredient : event.getInventory().getMatrix()) {
       if (this.isDestroyableWool(ingredient, player.getParty())) {
-        acceptWoolDestroy(player, ((Wool) ingredient.getData()).getColor());
+        for (DyeColor color : DyeColor.values()) {
+          if (COLOR_UTILS.isColor(MaterialData.item(ingredient), color)) {
+            acceptWoolDestroy(player, color);
+            break;
+          }
+        }
       }
     }
   }
@@ -89,7 +95,12 @@ public class WoolDestructionListener extends ShareListener {
     if (player == null) return;
 
     if (isDestroyableWool(stack, player.getParty())) {
-      acceptWoolDestroy(player, ((Wool) stack.getData()).getColor());
+      for (DyeColor color : DyeColor.values()) {
+        if (COLOR_UTILS.isColor(MaterialData.item(stack), color)) {
+          acceptWoolDestroy(player, color);
+          break;
+        }
+      }
     }
   }
 
@@ -113,9 +124,7 @@ public class WoolDestructionListener extends ShareListener {
       return false;
     }
 
-    DyeColor color = ((Wool) stack.getData()).getColor();
     boolean enemyOwned = false;
-
     GoalMatchModule gmm = team.getMatch().getModule(GoalMatchModule.class);
 
     if (gmm != null) {
@@ -123,7 +132,7 @@ public class WoolDestructionListener extends ShareListener {
         if (goal instanceof MonumentWool wool) {
           if (wool.hasShowOption(ShowOption.STATS)
               && !wool.isPlaced()
-              && wool.getDyeColor() == color) {
+              && COLOR_UTILS.isColor(MaterialData.item(stack), wool.getDyeColor())) {
             if (wool.getOwner() == team) {
               return false;
             } else {
