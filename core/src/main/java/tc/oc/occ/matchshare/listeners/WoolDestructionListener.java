@@ -4,25 +4,34 @@ import static tc.oc.occ.matchshare.utils.WoolUtils.WOOL;
 import static tc.oc.pgm.util.material.ColorUtils.COLOR_UTILS;
 
 import com.google.common.collect.HashMultimap;
+import java.util.EnumSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.WeakHashMap;
+import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ItemMergeEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jspecify.annotations.Nullable;
 import tc.oc.occ.dispense.events.objectives.PGMWoolDestroyEvent;
 import tc.oc.occ.matchshare.MatchShare;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
 import tc.oc.pgm.api.match.event.MatchLoadEvent;
 import tc.oc.pgm.api.party.Competitor;
 import tc.oc.pgm.api.player.ParticipantState;
+import tc.oc.pgm.api.player.event.MatchPlayerDeathEvent;
+import tc.oc.pgm.api.tracker.info.FallInfo;
 import tc.oc.pgm.goals.Goal;
 import tc.oc.pgm.goals.GoalMatchModule;
 import tc.oc.pgm.goals.ShowOption;
@@ -32,7 +41,7 @@ import tc.oc.pgm.wool.MonumentWool;
 
 public class WoolDestructionListener extends ShareListener {
 
-  private final Map<Item, UUID> droppedWools;
+  private final Map<Item, ParticipantState> droppedWools;
   private final HashMultimap<DyeColor, UUID> destroyedWools;
 
   public WoolDestructionListener(MatchShare plugin) {
@@ -44,8 +53,9 @@ public class WoolDestructionListener extends ShareListener {
   public void acceptWoolDestroy(ParticipantState player, DyeColor color) {
     if (!this.destroyedWools.containsEntry(color, player.getId())) {
       this.destroyedWools.put(color, player.getId());
-      if (player.getPlayer().isPresent()) {
-        callNewEvent(new PGMWoolDestroyEvent(player.getPlayer().get().getBukkit(), color));
+      Player bukkit = Bukkit.getPlayer(player.getId());
+      if (bukkit != null) {
+        callNewEvent(new PGMWoolDestroyEvent(bukkit, color));
       }
     }
   }
@@ -57,16 +67,32 @@ public class WoolDestructionListener extends ShareListener {
     ParticipantState player = getParticipantState(event.getWhoClicked().getUniqueId());
     if (player == null) return;
 
-    for (ItemStack ingredient : event.getInventory().getMatrix()) {
-      if (this.isDestroyableWool(ingredient, player.getParty())) {
-        for (DyeColor color : DyeColor.values()) {
-          if (COLOR_UTILS.isColor(MaterialData.item(ingredient), color)) {
-            acceptWoolDestroy(player, color);
-            break;
-          }
+    creditWools(player, event.getInventory().getMatrix());
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR)
+  public void onVoidDeath(MatchPlayerDeathEvent event) {
+    if (!(event.getDamageInfo() instanceof FallInfo fall) || fall.getTo() != FallInfo.To.VOID) {
+      return;
+    }
+
+    ParticipantState player = event.getVictim().getParticipantState();
+    if (player == null) return;
+
+    creditWools(player, event.getVictim().getBukkit().getInventory().getContents());
+  }
+
+  private void creditWools(ParticipantState player, ItemStack[] stacks) {
+    Set<DyeColor> colors = EnumSet.noneOf(DyeColor.class);
+    for (ItemStack stack : stacks) {
+      if (isDestroyableWool(stack, player.getParty())) {
+        DyeColor color = getColor(stack);
+        if (color != null) {
+          colors.add(color);
         }
       }
     }
+    colors.forEach(color -> acceptWoolDestroy(player, color));
   }
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -74,33 +100,53 @@ public class WoolDestructionListener extends ShareListener {
     ParticipantState player = getParticipantState(event.getPlayer().getUniqueId());
     if (player == null) return;
 
-    Competitor team = player.getParty();
     Item itemDrop = event.getItemDrop();
-    ItemStack item = itemDrop.getItemStack();
-
-    if (isDestroyableWool(item, team)) {
-      this.droppedWools.put(itemDrop, player.getId());
+    if (isDestroyableWool(itemDrop.getItemStack(), player.getParty())) {
+      this.droppedWools.put(itemDrop, player);
     }
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
   public void onVoidDespawn(EntityDespawnInVoidEvent event) {
     Entity entity = event.getEntity();
-    if (!(entity instanceof Item)) return;
-    ItemStack stack = ((Item) entity).getItemStack();
+    if (entity instanceof Item item) {
+      creditDestroyed(item);
+    }
+  }
 
-    UUID playerId = this.droppedWools.remove(entity);
-    if (playerId == null) return;
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+  public void onWoolDamage(EntityDamageEvent event) {
+    if (!(event.getEntity() instanceof Item item)) return;
+    if (!this.droppedWools.containsKey(item)) return;
 
-    ParticipantState player = getParticipantState(playerId);
+    plugin.getServer().getScheduler().runTask(plugin, () -> {
+      if (item.isDead()) {
+        creditDestroyed(item);
+      }
+    });
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+  public void onPlayerPickup(PlayerPickupItemEvent event) {
+    if (event.getRemaining() <= 0) {
+      this.droppedWools.remove(event.getItem());
+    }
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+  public void onInventoryPickup(InventoryPickupItemEvent event) {
+    this.droppedWools.remove(event.getItem());
+  }
+
+  private void creditDestroyed(Item item) {
+    ParticipantState player = this.droppedWools.remove(item);
     if (player == null) return;
 
+    ItemStack stack = item.getItemStack();
     if (isDestroyableWool(stack, player.getParty())) {
-      for (DyeColor color : DyeColor.values()) {
-        if (COLOR_UTILS.isColor(MaterialData.item(stack), color)) {
-          acceptWoolDestroy(player, color);
-          break;
-        }
+      DyeColor color = getColor(stack);
+      if (color != null) {
+        acceptWoolDestroy(player, color);
       }
     }
   }
@@ -127,6 +173,15 @@ public class WoolDestructionListener extends ShareListener {
         event.setCancelled(true);
       }
     }
+  }
+
+  private @Nullable DyeColor getColor(ItemStack stack) {
+    for (DyeColor color : DyeColor.values()) {
+      if (COLOR_UTILS.isColor(MaterialData.item(stack), color)) {
+        return color;
+      }
+    }
+    return null;
   }
 
   private boolean isDestroyableWool(ItemStack stack, Competitor team) {
