@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import tc.oc.occ.matchshare.MatchShare;
 import tc.oc.pgm.api.integration.Integration;
@@ -27,6 +28,19 @@ public class PlayerMetaListener extends ShareListener {
   public static final String TEAM_MAX_KEY = "teamMax";
   public static final String VANISHED_KEY = "isVanished";
 
+  private static final String[] ALL_KEYS = {
+    OBS_KEY,
+    PLAY_KEY,
+    MAP_KEY,
+    NICK_KEY,
+    NICK_NAME_KEY,
+    BLITZ_KEY,
+    PARTY_KEY,
+    PARTY_COLOR_KEY,
+    TEAM_MAX_KEY,
+    VANISHED_KEY
+  };
+
   public PlayerMetaListener(MatchShare plugin) {
     super(plugin);
   }
@@ -36,25 +50,33 @@ public class PlayerMetaListener extends ShareListener {
     Player player = event.getPlayer();
 
     String nickname = Integration.getNick(player);
-    boolean nicked = nickname != null;
-    if (nicked) {
+    if (nickname != null) {
       player.setMetadata(NICK_KEY, new FixedMetadataValue(plugin, true));
       player.setMetadata(NICK_NAME_KEY, new FixedMetadataValue(plugin, nickname));
+    } else {
+      player.removeMetadata(NICK_KEY, plugin);
+      player.removeMetadata(NICK_NAME_KEY, plugin);
     }
 
-    boolean vanished = Integration.isVanished(player);
-    if (vanished) {
-      player.setMetadata(VANISHED_KEY, new FixedMetadataValue(plugin, true));
+    setVanished(player, Integration.isVanished(player));
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR)
+  public void onQuitServer(PlayerQuitEvent event) {
+    Player player = event.getPlayer();
+    for (String key : ALL_KEYS) {
+      player.removeMetadata(key, plugin);
     }
   }
 
   @EventHandler
   public void onToggleVanish(PlayerVanishEvent event) {
-    Player player = event.getPlayer().getBukkit();
-    boolean vanished = event.isVanished();
+    setVanished(event.getPlayer().getBukkit(), event.isVanished());
+  }
 
+  private void setVanished(Player player, boolean vanished) {
     if (vanished) {
-      player.setMetadata(VANISHED_KEY, new FixedMetadataValue(plugin, event.isVanished()));
+      player.setMetadata(VANISHED_KEY, new FixedMetadataValue(plugin, true));
     } else {
       player.removeMetadata(VANISHED_KEY, plugin);
     }
