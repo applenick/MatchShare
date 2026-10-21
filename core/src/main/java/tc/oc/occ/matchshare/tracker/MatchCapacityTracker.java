@@ -7,7 +7,10 @@ import tc.oc.pgm.api.match.Match;
 
 public class MatchCapacityTracker {
 
+  private int lastMax = -1;
+
   public MatchCapacityTracker(MatchShare plugin) {
+    if (!plugin.getServer().getPluginManager().isPluginEnabled("Environment")) return;
     plugin.getServer().getScheduler().runTaskTimer(plugin, this::updateCapacity, 20L, 20L);
   }
 
@@ -15,16 +18,16 @@ public class MatchCapacityTracker {
     Match match = PGMUtils.getMatch();
     if (match != null) {
       int max = match.getMaxPlayers();
-      setMax(max);
+      if (max != lastMax) {
+        setMax(max);
+      }
     }
   }
 
-  private boolean isEnvEnabled() {
-    return Environment.get() != null;
-  }
-
   private void setMax(int max) {
-    if (!isEnvEnabled()) return;
-    Environment.get().setEnv("max-players", max);
+    Environment env = Environment.get();
+    if (env == null) return;
+    env.setEnv("max-players", max);
+    lastMax = max;
   }
 }

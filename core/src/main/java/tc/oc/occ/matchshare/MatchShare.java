@@ -36,9 +36,11 @@ public class MatchShare extends JavaPlugin implements Listener {
 
     try {
       Platform.init();
+      Platform.MANIFEST.onEnable(this);
     } catch (Throwable t) {
       getLogger().log(Level.SEVERE, "Failed to initialize MatchShare platform", t);
       getServer().getPluginManager().disablePlugin(this);
+      return;
     }
 
     registerEvents(new DebugListener(this));
@@ -55,9 +57,12 @@ public class MatchShare extends JavaPlugin implements Listener {
     registerEvents(new BlockListener(this));
     registerEvents(new SportsmanshipListener(this));
     registerEvents(new RestartListener(this));
-    registerEvents(new WebsiteListener(this));
     registerEvents(new PlayerJoinListener(this));
     registerEvents(new AssistanceListener(this));
+
+    if (getServer().getPluginManager().isPluginEnabled("Dewdrop")) {
+      registerEvents(new WebsiteListener(this));
+    }
   }
 
   public MatchTimeTracker getTimeTracker() {
@@ -65,7 +70,6 @@ public class MatchShare extends JavaPlugin implements Listener {
   }
 
   private void registerEvents(Listener listener) {
-    Platform.MANIFEST.onEnable(this);
     getServer().getPluginManager().registerEvents(listener, this);
   }
 }

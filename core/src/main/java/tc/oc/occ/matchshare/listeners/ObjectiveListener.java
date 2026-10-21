@@ -21,6 +21,7 @@ import tc.oc.occ.dispense.events.objectives.PGMWoolCaptureEvent;
 import tc.oc.occ.dispense.events.objectives.PGMWoolTouchEvent;
 import tc.oc.occ.matchshare.MatchShare;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
+import tc.oc.pgm.api.match.event.MatchLoadEvent;
 import tc.oc.pgm.core.CoreLeakEvent;
 import tc.oc.pgm.destroyable.DestroyableDestroyedEvent;
 import tc.oc.pgm.flag.Flag;
@@ -141,6 +142,11 @@ public class ObjectiveListener extends ShareListener {
           callNewEvent(new PGMScoreEvent(player, e.getValue().redeem()));
         });
 
+    this.scoreRecords.clear();
+  }
+
+  @EventHandler(priority = EventPriority.LOWEST)
+  public void onMatchLoad(MatchLoadEvent event) {
     this.scoreRecords.clear();
   }
 

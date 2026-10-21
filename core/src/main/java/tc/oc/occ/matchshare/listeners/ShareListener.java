@@ -2,6 +2,7 @@ package tc.oc.occ.matchshare.listeners;
 
 import java.util.UUID;
 import java.util.logging.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import tc.oc.occ.dispense.events.DispenseEvent;
@@ -21,11 +22,11 @@ public abstract class ShareListener implements Listener {
   }
 
   protected void callNewEvent(DispenseEvent event) {
-    plugin.getServer().getPluginManager().callEvent(event);
-  }
-
-  protected void callSyncEvent(DispenseEvent event) {
-    plugin.getServer().getScheduler().runTask(plugin, () -> callNewEvent(event));
+    if (Bukkit.isPrimaryThread()) {
+      plugin.getServer().getPluginManager().callEvent(event);
+    } else {
+      plugin.getServer().getScheduler().runTask(plugin, () -> callNewEvent(event));
+    }
   }
 
   protected Match getMatch() {

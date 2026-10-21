@@ -21,6 +21,7 @@ import tc.oc.occ.matchshare.MatchShare;
 import tc.oc.occ.matchshare.tracker.MatchTimeTracker;
 import tc.oc.pgm.api.integration.Integration;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
+import tc.oc.pgm.api.match.event.MatchLoadEvent;
 import tc.oc.pgm.api.party.Competitor;
 import tc.oc.pgm.api.player.MatchPlayer;
 import tc.oc.pgm.events.PlayerJoinPartyEvent;
@@ -34,6 +35,11 @@ public class TimeTrackerListener extends ShareListener {
   public TimeTrackerListener(MatchShare plugin) {
     super(plugin);
     this.tracker = plugin.getTimeTracker();
+  }
+
+  @EventHandler(priority = EventPriority.LOWEST)
+  public void onMatchLoad(MatchLoadEvent event) {
+    tracker.reset();
   }
 
   @EventHandler

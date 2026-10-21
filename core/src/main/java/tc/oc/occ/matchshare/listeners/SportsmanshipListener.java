@@ -14,6 +14,7 @@ import tc.oc.occ.dispense.events.match.PGMMatchParticipationEvent;
 import tc.oc.occ.dispense.events.match.PGMMatchWinnerEvent;
 import tc.oc.occ.dispense.events.players.PGMPlayerSportsmanshipEvent;
 import tc.oc.occ.matchshare.MatchShare;
+import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.match.MatchPhase;
 import tc.oc.pgm.api.match.event.MatchPhaseChangeEvent;
 
@@ -40,12 +41,14 @@ public class SportsmanshipListener extends ShareListener {
 
     if (player == null || !player.isOnline()) return;
     if (goodSports.getIfPresent(player.getUniqueId()) != null) return;
-    if (!getMatch().isFinished()) return;
 
-    if (getMatch().isFinished() && isGG(event.getMessage())) {
+    Match match = getMatch();
+    if (match == null || !match.isFinished()) return;
+
+    if (isGG(event.getMessage())) {
       goodSports.put(player.getUniqueId(), event.getMessage());
 
-      callSyncEvent(
+      callNewEvent(
           new PGMPlayerSportsmanshipEvent(player, isWinner(player), isParticipant(player)));
     }
   }

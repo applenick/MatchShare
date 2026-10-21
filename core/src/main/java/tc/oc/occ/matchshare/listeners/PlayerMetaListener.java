@@ -97,6 +97,8 @@ public class PlayerMetaListener extends ShareListener {
 
     if (party instanceof Team team) {
       player.setMetadata(TEAM_MAX_KEY, new FixedMetadataValue(plugin, team.getMaxPlayers()));
+    } else {
+      player.removeMetadata(TEAM_MAX_KEY, plugin);
     }
 
     player.setMetadata(MAP_KEY, new FixedMetadataValue(plugin, map));
