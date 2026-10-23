@@ -5,11 +5,12 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import tc.oc.occ.dispense.events.players.PGMPlayerStatsEvent;
 import tc.oc.occ.dispense.events.players.data.PGMPlayerStats;
 import tc.oc.occ.matchshare.MatchShare;
 import tc.oc.pgm.api.match.Match;
-import tc.oc.pgm.api.match.event.MatchStatsEvent;
+import tc.oc.pgm.api.match.event.MatchFinishEvent;
 import tc.oc.pgm.stats.PlayerStats;
 import tc.oc.pgm.stats.StatsMatchModule;
 
@@ -19,8 +20,8 @@ public class StatsListener extends ShareListener {
     super(plugin);
   }
 
-  @EventHandler
-  public void onMatchStats(MatchStatsEvent event) {
+  @EventHandler(priority = EventPriority.MONITOR)
+  public void onMatchFinish(MatchFinishEvent event) {
     Match match = event.getMatch();
     if (match == null) return;
     StatsMatchModule stats = match.getModule(StatsMatchModule.class);
@@ -29,21 +30,23 @@ public class StatsListener extends ShareListener {
     Map<UUID, PlayerStats> playerStats = stats.getStats();
     if (playerStats.isEmpty()) return;
     playerStats.forEach((id, stat) -> {
-      Player player = Bukkit.getPlayer(id);
-      if (player != null) {
-        PGMPlayerStats wrappedStats = new PGMPlayerStats(
-            id,
-            stat.getKills(),
-            stat.getDeaths(),
-            stat.getMaxKillstreak(),
-            stat.getLongestBowKill(),
-            stat.getBowDamage(),
-            stat.getShotsTaken(),
-            stat.getShotsHit(),
-            stat.getDamageDone(),
-            stat.getDamageTaken());
-        callNewEvent(new PGMPlayerStatsEvent(player, wrappedStats));
-      }
+      PGMPlayerStats wrappedStats = new PGMPlayerStats(
+          id,
+          stat.getKills(),
+          stat.getDeaths(),
+          stat.getMaxKillstreak(),
+          stat.getLongestBowKill(),
+          stat.getBowDamage(),
+          stat.getShotsTaken(),
+          stat.getShotsHit(),
+          stat.getDamageDone(),
+          stat.getDamageTaken());
+      plugin.getServer().getScheduler().runTask(plugin, () -> {
+        Player player = Bukkit.getPlayer(id);
+        if (player != null) {
+          callNewEvent(new PGMPlayerStatsEvent(player, wrappedStats));
+        }
+      });
     });
   }
 }
